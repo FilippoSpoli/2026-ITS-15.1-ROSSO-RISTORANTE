@@ -7,24 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sfondo-scuro': '#0a0a0a',
-                        'sfondo-card': '#141414',
-                        'oro-accento': '#C5A059',
-                        'oro-hover': '#e6bf70'
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'serif'],
-                        sans: ['"Lato"', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+   
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -235,6 +218,111 @@
     <div class="ht"></div>
 
     
+
+<!-- Inizio sezione recensioni e feedback -->
+
+<section class="w-full bg-[#050505] py-20 border-t border-gray-900 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+        
+        <div class="flex flex-col items-center text-center mb-12">
+            <h2 class="font-serif text-4xl md:text-5xl text-white font-bold mb-4">
+                Dicono di <span class="text-oro-accento italic">Noi</span>
+            </h2>
+            <span class="text-gray-400 tracking-widest uppercase text-xs border-b border-oro-accento/30 pb-2">
+                L'esperienza dei nostri ospiti
+            </span>
+        </div>
+
+        <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 w-full hide-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
+            
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"La migliore carne mai mangiata a Genova. Il filetto al tartufo si scioglie in bocca. Atmosfera elegante e servizio impeccabile."</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- Marco R.</h4>
+            </div>
+
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <span class="text-xs font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"Una vera esperienza premium. La cura nei dettagli e la selezione dei vini fanno la differenza. Torneremo sicuramente."</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- Giulia B.</h4>
+            </div>
+
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <span class="text-xs font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"Il Tomahawk cotto su brace di leccio è un'opera d'arte. Consigliatissimo per una cena romantica o un'occasione speciale."</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- Alessandro C.</h4>
+            </div>
+
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <span class="text-xs font-bold uppercase tracking-widest text-white mt-1">4.5</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"Location stupenda e personale preparatissimo che sa guidarti nella scelta dei tagli di carne più pregiati."</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- Elena V.</h4>
+            </div>
+
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <span class="text-xs font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"Senza dubbio la migliore Steakhouse della Liguria. Qualità altissima e design degli interni mozzafiato."</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- Lorenzo M.</h4>
+            </div>
+
+        </div>
+
+        <div class="mt-12 flex justify-center">
+            <button id="btn-apri-feedback" class="bg-transparent border border-oro-accento text-oro-accento hover:bg-oro-accento hover:text-[#050505] transition duration-500 text-xs font-bold tracking-widest uppercase px-10 py-3">
+                Lascia il tuo Feedback
+            </button>
+        </div>
+    </div>
+</section>
+
+<div id="feedback-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex-col items-center justify-center px-4 opacity-0 transition-opacity duration-300">
+    
+    <div class="bg-[#0a0a0a] w-full max-w-lg p-8 md:p-10 rounded-xl border border-gray-800 shadow-2xl relative transform scale-95 transition-transform duration-300" id="modal-content">
+        
+        <button id="btn-chiudi-feedback" class="absolute top-4 right-5 text-gray-500 hover:text-oro-accento text-2xl transition-colors">
+            &times;
+        </button>
+
+        <h3 class="font-serif text-2xl text-white mb-2">La tua opinione</h3>
+        <p class="text-gray-400 text-xs tracking-widest uppercase mb-8">Inserisci la tua email e recensione</p>
+
+        <form action="#" method="POST" class="space-y-6">
+            <div class="relative">
+                <label for="modal-email" class="block text-gray-500 text-[10px] uppercase tracking-widest mb-1">Indirizzo Email</label>
+                <input type="email" id="modal-email" name="email" required placeholder="mario.rossi@email.com"
+                       class="w-full bg-transparent border-b border-gray-800 text-white focus:border-oro-accento focus:outline-none transition-colors py-2 text-sm placeholder-gray-700">
+            </div>
+            
+            <div class="relative">
+                <label for="modal-msg" class="block text-gray-500 text-[10px] uppercase tracking-widest mb-1">Il tuo feedback</label>
+                <textarea id="modal-msg" name="messaggio" rows="3" required placeholder="Scrivi qui la tua esperienza..."
+                          class="w-full bg-transparent border-b border-gray-800 text-white focus:border-oro-accento focus:outline-none transition-colors py-2 text-sm resize-none placeholder-gray-700"></textarea>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-oro-accento text-[#050505] hover:bg-white transition duration-500 text-xs font-bold tracking-widest uppercase px-8 py-3">
+                    Invia Feedback
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
 
 
 <div class="mt"></div>
