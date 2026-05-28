@@ -1,0 +1,57 @@
+
+/* Importazione dei font eleganti (Playfair Display per i titoli, Lato per i testi piccoli) */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+
+.ht{
+
+    height: -40px;
+}
+
+
+.mt{
+    margin-top:100px
+}
+
+
+
+
+
+
+
+
+/* Animazione per far fluttuare leggermente l'immagine del piatto  */
+@keyframes fluttuazione {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float {
+    animation: fluttuazione 6s ease-in-out infinite;
+}
+
+
+/* Nascondere la scrollbar per lo slider mantenendo la funzionalità */
+.hide-scroll-bar {
+    -ms-overflow-style: none;  /* IE e Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.hide-scroll-bar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari e Opera */
+}
+
+
+
+/* Calculamos el ancho de 4 tarjetas (4x288px) + 4 espacios (4x24px) = 1248px */
+    @keyframes scroll-slider {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-1248px); }
+    }
+    .animate-infinite-scroll {
+        animation: scroll-slider 15s linear infinite;
+    }
+    /* El slider se pausa cuando el usuario pone el ratón encima */
+    .animate-infinite-scroll:hover {
+        animation-play-state: paused;
+    }
