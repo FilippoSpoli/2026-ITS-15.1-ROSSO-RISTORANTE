@@ -259,3 +259,112 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+
+
+
+// ==========================================
+// GESTIONE RECENSIONI E LOCALSTORAGE
+// ==========================================
+
+// 1. Selezioniamo gli elementi esatti dal tuo HTML
+const modalFeedback = document.getElementById('feedback-modal');
+const btnApriFeedback = document.getElementById('btn-apri-feedback');
+const btnChiudiFeedback = document.getElementById('btn-chiudi-feedback');
+const formFeedback = modalFeedback ? modalFeedback.querySelector('form') : null;
+
+// Selezioniamo il contenitore in cui scorrono le card dei clienti
+const contenedorTarjetas = document.querySelector('section.py-20 .flex.gap-6.overflow-x-auto');
+
+// 2. Recuperiamo le recensioni esistenti dal localStorage (se non ce ne sono, iniziamo con un array vuoto)
+let comentariosGuardados = JSON.parse(localStorage.getItem('recensioni_steakhouse')) || [];
+
+// 3. Funzione per mostrare le recensioni salvate all'apertura della pagina
+function mostrarComentariosGuardados() {
+    if (!contenedorTarjetas) return;
+    
+    comentariosGuardados.forEach(item => {
+        // Creiamo la card con la stessa struttura esatta del tuo HTML
+        const nuevaTarjetaHTML = `
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"${item.messaggio}"</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${item.email.split('@')[0]}</h4>
+            </div>
+        `;
+        // Inseriamo la card all'inizio della lista così l'utente la vede subito
+        contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
+    });
+}
+
+// Eseguiamo la funzione al caricamento della pagina
+mostrarComentariosGuardados();
+
+// 4. Logica per aprire e chiudere il modal
+if (btnApriFeedback && modalFeedback) {
+    btnApriFeedback.addEventListener('click', () => {
+        modalFeedback.classList.remove('hidden');
+        modalFeedback.classList.add('flex');
+        setTimeout(() => modalFeedback.classList.remove('opacity-0'), 10);
+    });
+}
+
+if (btnChiudiFeedback && modalFeedback) {
+    btnChiudiFeedback.addEventListener('click', () => {
+        modalFeedback.classList.add('opacity-0');
+        setTimeout(() => {
+            modalFeedback.classList.remove('flex');
+            modalFeedback.classList.add('hidden');
+        }, 300);
+    });
+}
+
+// 5. Gestione dell'invio del form, salvataggio in localStorage e inserimento nella pagina
+if (formFeedback) {
+    formFeedback.addEventListener('submit', (e) => {
+        e.preventDefault(); // Impedisce il ricaricamento della pagina
+
+        // Recuperiamo i dati inseriti nei campi del form
+        const emailInput = document.getElementById('modal-email').value;
+        const messaggioInput = document.getElementById('modal-msg').value;
+
+        // Creiamo l'oggetto con la nuova recensione
+        const nuevoFeedback = {
+            email: emailInput,
+            messaggio: messaggioInput
+        };
+
+        // Aggiungiamo la nuova recensione all'inizio del nostro array
+        comentariosGuardados.unshift(nuevoFeedback);
+
+        // Salviamo l'array aggiornato nel localStorage come stringa di testo
+        localStorage.setItem('recensioni_steakhouse', JSON.stringify(comentariosGuardados));
+
+        // Creiamo e inseriamo immediatamente la nuova card nella pagina in modo dinamico
+        const nuevaTarjetaHTML = `
+            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                <div class="text-oro-accento flex mb-4">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                </div>
+                <p class="text-gray-400 text-sm font-light italic mb-6">"${messaggioInput}"</p>
+                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${emailInput.split('@')[0]}</h4>
+            </div>
+        `;
+        
+        if (contenedorTarjetas) {
+            contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
+        }
+
+        // Resettiamo i campi del form e chiudiamo la finestra modale
+        formFeedback.reset();
+        btnChiudiFeedback.click();
+    });
+}
