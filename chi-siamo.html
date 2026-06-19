@@ -1,14 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steakhouse - Chi Siamo</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-   <script>
+
+    <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -29,10 +29,12 @@
 
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="bg-sfondo-scuro text-white font-sans overflow-x-hidden">
     <!-- Inizio contenuto pagina -->
 
-    <div id="contenitore-principale" class="opacity-0 transition-opacity duration-1000 ease-in min-h-screen flex flex-col relative">
+    <div id="contenitore-principale"
+        class="opacity-0 transition-opacity duration-1000 ease-in min-h-screen flex flex-col relative">
 
         <!-- Inizio sezione navigazione -->
         <nav class="container mx-auto px-8 py-8 flex justify-between items-center z-50 relative">
@@ -41,12 +43,15 @@
             </div>
             <ul class="hidden md:flex space-x-8 text-xs font-light tracking-widest uppercase text-gray-400">
                 <li><a href="index.html" class="hover:text-white transition duration-300">Home</a></li>
-                <li><a href="chi-siamo.html" class="text-white border-b border-white pb-1 transition duration-300">Chi Siamo</a></li>
+                <li><a href="chi-siamo.html" class="text-white border-b border-white pb-1 transition duration-300">Chi
+                        Siamo</a></li>
                 <li><a href="menu.html" class="hover:text-white transition duration-300">Il Menu</a></li>
                 <li><a href="ordini.html" class="hover:text-white transition duration-300">Ordina Online</a></li>
-                <li><a href="prenotazioni.html" class="hover:text-white transition duration-300">Prenota un Tavolo</a></li>
+                <li><a href="prenotazioni.html" class="hover:text-white transition duration-300">Prenota un Tavolo</a>
+                </li>
             </ul>
-            <button id="menu-btn" class="md:hidden flex flex-col space-y-1.5 focus:outline-none z-50 relative cursor-pointer">
+            <button id="menu-btn"
+                class="md:hidden flex flex-col space-y-1.5 focus:outline-none z-50 relative cursor-pointer">
                 <span class="w-6 h-0.5 bg-gray-300 transform transition duration-300 origin-center"></span>
                 <span class="w-6 h-0.5 bg-gray-300 transition duration-300"></span>
                 <span class="w-6 h-0.5 bg-gray-300 transform transition duration-300 origin-center"></span>
@@ -54,13 +59,17 @@
         </nav>
         <!-- Inizio sezione mobile menu -->
 
-        <div id="mobile-menu" class="fixed inset-0 bg-sfondo-scuro bg-opacity-95 backdrop-blur-md z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="mobile-menu"
+            class="fixed inset-0 bg-sfondo-scuro bg-opacity-95 backdrop-blur-md z-40 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
             <ul class="flex flex-col space-y-8 text-center text-lg font-light tracking-widest uppercase text-gray-300">
                 <li><a href="index.html" class="hover:text-white transition duration-300">Home</a></li>
-                <li><a href="chi-siamo.html" class="text-white border-b border-white pb-1 inline-block transition duration-300">Chi Siamo</a></li>
+                <li><a href="chi-siamo.html"
+                        class="text-white border-b border-white pb-1 inline-block transition duration-300">Chi Siamo</a>
+                </li>
                 <li><a href="menu.html" class="hover:text-white transition duration-300">Il Menu</a></li>
                 <li><a href="ordini.html" class="hover:text-white transition duration-300">Ordina Online</a></li>
-                <li><a href="prenotazioni.html" class="hover:text-white transition duration-300">Prenota un Tavolo</a></li>
+                <li><a href="prenotazioni.html" class="hover:text-white transition duration-300">Prenota un Tavolo</a>
+                </li>
             </ul>
         </div>
         <!-- Inizio sezione hero chi siamo -->
@@ -73,17 +82,20 @@
                     Passione
                 </h1>
                 <p class="text-gray-400 text-sm leading-relaxed tracking-wide">
-                    Dal 1998 selezioniamo solo i migliori tagli di carne per offrirti un'esperienza culinaria indimenticabile, curando ogni dettaglio dalla griglia al tuo tavolo.
+                    Dal 1998 selezioniamo solo i migliori tagli di carne per offrirti un'esperienza culinaria
+                    indimenticabile, curando ogni dettaglio dalla griglia al tuo tavolo.
                 </p>
             </div>
             <div class="relative flex justify-center md:justify-center items-center animate-float">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/14001297335289295045" 
-                     alt="Interno Ristorante" 
-                     class="w-80 h-80 md:w-[480px] md:h-[480px] object-cover rounded-full shadow-2xl border border-gray-800 max-w-full">
+                <img src="https://media-assets.lacucinaitaliana.it/photos/67332aaabcde645fc34f4b71/master/w_1600%2Cc_limit/unnamed%2520(2).jpg"
+                    alt="Interno Ristorante"
+                    class="w-80 h-80 md:w-[480px] md:h-[480px] object-cover rounded-full shadow-2xl border border-gray-800 max-w-full">
             </div>
         </main>
 
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white opacity-[0.02] rounded-full blur-3xl pointer-events-none z-0"></div>
+        <div
+            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white opacity-[0.02] rounded-full blur-3xl pointer-events-none z-0">
+        </div>
 
     </div>
 
@@ -182,4 +194,5 @@
 
     <script src="js/main.js"></script>
 </body>
+
 </html>
