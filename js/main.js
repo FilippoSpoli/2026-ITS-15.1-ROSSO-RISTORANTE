@@ -1,5 +1,20 @@
 
-
+ tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sfondo-scuro': '#0a0a0a',
+                        'sfondo-card': '#141414',
+                        'oro-accento': '#C5A059',
+                        'oro-hover': '#e6bf70'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Lato"', 'sans-serif']
+                    }
+                }
+            }
+        }
 
 /**
  * Logica di base per l'inizializzazione della pagina e interazioni
@@ -133,3 +148,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+// Gestione del Modal Feedback
+    const modalFeedback = document.getElementById('feedback-modal');
+    const modalContent = document.getElementById('modal-content');
+    const btnApriFeedback = document.getElementById('btn-apri-feedback');
+    const btnChiudiFeedback = document.getElementById('btn-chiudi-feedback');
+
+    if (modalFeedback && btnApriFeedback) {
+        
+        // Funzione per aprire il modal
+        btnApriFeedback.addEventListener('click', () => {
+            modalFeedback.classList.remove('hidden');
+            modalFeedback.classList.add('flex');
+            // Ritardo di 10ms per permettere al CSS di applicare l'opacità
+            setTimeout(() => {
+                modalFeedback.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+            document.body.classList.add('overflow-hidden'); // Blocca lo scroll del sito
+        });
+
+        // Funzione per chiudere il modal
+        const chiudiModal = () => {
+            modalFeedback.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            // Aspetta che l'animazione finisca (300ms) prima di nasconderlo del tutto
+            setTimeout(() => {
+                modalFeedback.classList.add('hidden');
+                modalFeedback.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden'); // Riattiva lo scroll
+            }, 300);
+        };
+
+        btnChiudiFeedback.addEventListener('click', chiudiModal);
+
+        // Chiudi se l'utente clicca fuori dalla finestra nera
+        modalFeedback.addEventListener('click', (e) => {
+            if (e.target === modalFeedback) {
+                chiudiModal();
+            }
+        });
+    }
