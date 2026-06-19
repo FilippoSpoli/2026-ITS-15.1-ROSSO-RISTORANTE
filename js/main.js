@@ -127,9 +127,85 @@ document.addEventListener('DOMContentLoaded', () => {
             resetCarousel();
         });
 
-        startCarousel();
+             startCarousel();
     }
-});
 
+    // =====================================
+    // PRENOTAZIONI
+    // =====================================
+
+    const form = document.getElementById('reservationForm');
+
+    if (form) {
+
+        const card = document.getElementById('reservation-card');
+        const successMessage = document.getElementById('successMessage');
+        const confirmationText = document.getElementById('confirmationText');
+
+        const dateInput = document.getElementById('data');
+
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+        }
+
+        form.addEventListener('submit', function(e) {
+
+            e.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const telefono = document.getElementById('telefono').value;
+            const persone = document.getElementById('persone').value;
+            const data = document.getElementById('data').value;
+            const orario = document.getElementById('orario').value;
+            const note = document.getElementById('note').value;
+
+            const prenotazione = {
+                id: Date.now(),
+                nome,
+                email,
+                telefono,
+                persone,
+                data,
+                orario,
+                note,
+                dataCreazione: new Date().toLocaleString('it-IT')
+            };
+
+            let prenotazioni =
+                JSON.parse(localStorage.getItem('prenotazioni')) || [];
+
+            prenotazioni.push(prenotazione);
+
+            localStorage.setItem(
+                'prenotazioni',
+                JSON.stringify(prenotazioni)
+            );
+
+            const dataFormattata = new Date(data).toLocaleDateString('it-IT', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            confirmationText.innerHTML = `
+                Grazie <span class="text-oro-accento font-semibold">${nome}</span>!<br><br>
+                La tua prenotazione per
+                <span class="text-white font-semibold">${persone}</span>
+                persone il
+                <span class="text-white font-semibold">${dataFormattata}</span>
+                alle ore
+                <span class="text-white font-semibold">${orario}</span>
+                è stata registrata.<br><br>
+                Ti aspettiamo!
+            `;
+
+            card.classList.add('hidden');
+            successMessage.classList.remove('hidden');
+        });
+    }
+
+});
 
 
