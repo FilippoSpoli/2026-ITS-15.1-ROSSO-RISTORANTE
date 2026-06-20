@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestione Menù Ristorante</title>
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
+    <style>
+        /* Stile personalizzato per l'anteprima delle immagini nella tabella */
+        .img-anteprima {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="btn btn-outline-secondary" href="../index.html">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Esci
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <a href="#" class="brand-link">
+                <span class="brand-text font-weight-light">Pannello Admin</span>
+            </a>
+
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <li class="nav-item">
+                            <a href="admin-menu.html" class="nav-link">
+                                <i class="nav-icon fas fa-utensils"></i>
+                                <p>Gestione Menù</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="admin-prenotazioni.html" class="nav-link active">
+                                <i class="nav-icon fas fa-calendar-check"></i>
+                                <p>Prenotazioni Tavoli</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Prenotazioni Tavoli</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">Admin</a></li>
+                                <li class="breadcrumb-item active">Prenotazioni</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary card-outline">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+
+                                <h3 class="card-title">
+                                    Elenco Prenotazioni
+                                </h3>
+
+                                <button
+                                    id="btnSvuota"
+                                    class="btn btn-danger btn-sm">
+
+                                    <i class="fas fa-trash mr-1"></i>
+                                    Svuota Archivio
+
+                                </button>
+
+                            </div>
+
+                            <div class="card-body table-responsive p-0">
+
+                                <table class="table table-hover text-nowrap">
+
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nome</th>
+                                            <th>Email</th>
+                                            <th>Telefono</th>
+                                            <th>Persone</th>
+                                            <th>Data</th>
+                                            <th>Orario</th>
+                                            <th>Note</th>
+                                            <th>Azioni</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="tabellaPrenotazioni">
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aside class="control-sidebar control-sidebar-dark">
+        </aside>
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-inline">
+                Pannello di Amministrazione Ristorante
+            </div>
+            <strong>Copyright &copy; 2026.</strong> Tutti i diritti riservati.
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    <script>
+
+    $(document).ready(function () {
+
+        caricaPrenotazioni();
+
+        $("#btnSvuota").on("click", function () {
+
+            if (confirm("Vuoi eliminare tutte le prenotazioni?")) {
+
+                localStorage.removeItem("prenotazioni");
+
+                caricaPrenotazioni();
+            }
+
+        });
+
+    });
+
+    function caricaPrenotazioni() {
+
+        const tbody = $("#tabellaPrenotazioni");
+
+        tbody.empty();
+
+        const prenotazioni =
+            JSON.parse(localStorage.getItem("prenotazioni")) || [];
+
+        if (prenotazioni.length === 0) {
+
+            tbody.append(`
+                <tr>
+                    <td colspan="9" class="text-center text-muted py-4">
+                        Nessuna prenotazione trovata
+                    </td>
+                </tr>
+            `);
+
+            return;
+        }
+
+        prenotazioni
+            .slice()
+            .reverse()
+            .forEach(prenotazione => {
+
+                tbody.append(`
+                    <tr>
+
+                        <td>${prenotazione.id}</td>
+
+                        <td>
+                            <strong>${prenotazione.nome}</strong>
+                        </td>
+
+                        <td>${prenotazione.email}</td>
+
+                        <td>${prenotazione.telefono}</td>
+
+                        <td>
+                            <span class="badge badge-primary">
+                                ${prenotazione.persone}
+                            </span>
+                        </td>
+
+                        <td>${prenotazione.data}</td>
+
+                        <td>${prenotazione.orario}</td>
+
+                        <td>${prenotazione.note || '-'}</td>
+
+                        <td>
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="eliminaPrenotazione(${prenotazione.id})">
+
+                                <i class="fas fa-trash"></i>
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+                `);
+
+            });
+
+    }
+
+    function eliminaPrenotazione(id) {
+
+        if (!confirm("Eliminare questa prenotazione?")) {
+            return;
+        }
+
+        let prenotazioni =
+            JSON.parse(localStorage.getItem("prenotazioni")) || [];
+
+        prenotazioni =
+            prenotazioni.filter(p => p.id !== id);
+
+        localStorage.setItem(
+            "prenotazioni",
+            JSON.stringify(prenotazioni)
+        );
+
+        caricaPrenotazioni();
+    }
+
+    </script>
+    </body>
+
+    </html>

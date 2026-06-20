@@ -73,11 +73,161 @@
                     Assicurati il posto migliore. Inizia a progettare la tua esperienza culinaria esclusiva.
                 </p>
             </div>
-            <div class="relative flex justify-center md:justify-center items-center animate-float">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/15101191995013832688" 
-                     alt="Tavolo Apparecchiato" 
-                     class="w-80 h-80 md:w-[480px] md:h-[480px] object-cover rounded-full shadow-2xl border border-gray-800 max-w-full">
+            <div class="w-full max-w-xl mx-auto">
+    
+    <!-- Form Card -->
+    <div id="reservation-card"
+         class="bg-sfondo-card/90 backdrop-blur-md border border-oro-accento/20 rounded-3xl p-8 md:p-10 shadow-2xl">
+
+        <h2 class="font-serif text-3xl text-white mb-2">
+            Prenota un Tavolo
+        </h2>
+
+        <p class="text-gray-400 text-sm mb-8">
+            Compila il modulo per riservare la tua esperienza Steakhouse.
+        </p>
+
+        <form id="reservationForm" class="space-y-5">
+
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                    Nominativo
+                </label>
+                <input
+                    type="text"
+                    id="nome"
+                    required
+                    class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none transition duration-300">
             </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        id="email"
+                        required
+                        class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none transition duration-300">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                        Telefono
+                    </label>
+                    <input
+                        type="tel"
+                        id="telefono"
+                        required
+                        class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none transition duration-300">
+                </div>
+
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                        Persone
+                    </label>
+
+                    <select
+                        id="persone"
+                        required
+                        class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none">
+
+                        <option value="">Seleziona</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data"
+                        required
+                        class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none transition duration-300">
+                </div>
+
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                    Orario
+                </label>
+
+                <select
+                    id="orario"
+                    required
+                    class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none">
+
+                    <option value="">Seleziona orario</option>
+                    <option>19:00</option>
+                    <option>19:30</option>
+                    <option>20:00</option>
+                    <option>20:30</option>
+                    <option>21:00</option>
+                    <option>21:30</option>
+                    <option>22:00</option>
+                    <option>22:30</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+                    Note o richieste speciali
+                </label>
+
+                <textarea
+                    id="note"
+                    rows="4"
+                    placeholder="Eventuali allergie, occasioni speciali o richieste..."
+                    class="w-full bg-black/30 border border-gray-700 focus:border-oro-accento rounded-xl px-4 py-3 text-white outline-none resize-none transition duration-300"></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-oro-accento hover:bg-oro-hover text-black font-semibold tracking-widest uppercase py-4 rounded-xl transition duration-300 shadow-lg">
+
+                Prenota il Tavolo
+            </button>
+
+        </form>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage"
+         class="hidden bg-sfondo-card/90 backdrop-blur-md border border-oro-accento rounded-3xl p-10 text-center shadow-2xl">
+
+        <div class="text-5xl mb-6 text-oro-accento">
+            ✓
+        </div>
+
+        <h3 class="font-serif text-3xl text-white mb-4">
+            Prenotazione Confermata
+        </h3>
+
+        <p id="confirmationText"
+           class="text-gray-300 leading-relaxed">
+        </p>
+    </div>
+
+</div>
         </main>
 
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white opacity-[0.02] rounded-full blur-3xl pointer-events-none z-0"></div>
@@ -85,7 +235,7 @@
     </div>
 
     <!-- Inizio sezione footer -->
-    <footer class="bg-[#050505] border-t border-gray-900 pt-20 pb-10 relative z-10">
+   <footer class="bg-[#050505] border-t border-gray-900 pt-20 pb-10 relative z-10">
     <div class="container mx-auto px-8 md:px-16">
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
@@ -155,20 +305,75 @@
 
         </div>
 
-        <div class="border-t border-gray-900 pt-10 flex flex-col md:row justify-between items-center space-y-4 md:space-y-0">
+        <div class="border-t border-gray-900 pt-10 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p class="text-gray-600 text-[10px] tracking-[3px] uppercase">
                 &copy; 2026 Steakhouse Premium. Tutti i diritti riservati.
             </p>
-            <div class="flex space-x-8 text-[10px] tracking-widest uppercase text-gray-600">
+            <div class="flex space-x-8 text-[10px] tracking-widest uppercase text-gray-600 items-center">
                 <a href="#" class="hover:text-oro-accento transition">Privacy Policy</a>
                 <a href="#" class="hover:text-oro-accento transition">Cookie Policy</a>
+                
+                <a href="admin.html" class="flex items-center space-x-1.5 hover:text-oro-accento transition duration-300">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>Gestione</span>
+                </a>
             </div>
         </div>
         
     </div>
-</footer>
-                      
+</footer>         
 
     <script src="js/main.js"></script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const form = document.getElementById('reservationForm');
+    const card = document.getElementById('reservation-card');
+    const successMessage = document.getElementById('successMessage');
+    const confirmationText = document.getElementById('confirmationText');
+
+    const dateInput = document.getElementById('data');
+
+    // Impedisce di selezionare date passate
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('nome').value;
+        const persone = document.getElementById('persone').value;
+        const data = document.getElementById('data').value;
+        const orario = document.getElementById('orario').value;
+
+        const dataFormattata = new Date(data).toLocaleDateString('it-IT', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        confirmationText.innerHTML = `
+            Grazie <span class="text-oro-accento font-semibold">${nome}</span>!<br><br>
+            La tua prenotazione per
+            <span class="text-white font-semibold">${persone}</span>
+            persone il
+            <span class="text-white font-semibold">${dataFormattata}</span>
+            alle ore
+            <span class="text-white font-semibold">${orario}</span>
+            è stata registrata con successo.<br><br>
+            Ti aspettiamo per una serata indimenticabile.
+        `;
+
+        card.classList.add('hidden');
+        successMessage.classList.remove('hidden');
+    });
+
+});
+</script>
+
 </body>
 </html>
