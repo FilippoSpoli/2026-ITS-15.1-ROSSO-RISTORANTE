@@ -1,15 +1,17 @@
-tailwind.config = {
-    theme: {
-        extend: {
-            colors: {
-                'sfondo-scuro': '#0a0a0a',
-                'sfondo-card': '#141414',
-                'oro-accento': '#C5A059',
-                'oro-hover': '#e6bf70'
-            },
-            fontFamily: {
-                serif: ['"Playfair Display"', 'serif'],
-                sans: ['"Lato"', 'sans-serif']
+if (typeof tailwind !== 'undefined') {
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'sfondo-scuro': '#0a0a0a',
+                    'sfondo-card': '#141414',
+                    'oro-accento': '#C5A059',
+                    'oro-hover': '#e6bf70'
+                },
+                fontFamily: {
+                    serif: ['"Playfair Display"', 'serif'],
+                    sans: ['"Lato"', 'sans-serif']
+                }
             }
         }
     }
@@ -32,38 +34,50 @@ window.aggiungiProdotto = function(selectId) {
     const itemId = 'item-' + Date.now(); 
 
     const msgVuoto = document.getElementById('carrello-vuoto');
-    if (msgVuoto) msgVuoto.remove();
+    if (msgVuoto) msgVuoto.classList.add('hidden');
 
     const htmlProdotto = `
         <div id="${itemId}" class="flex justify-between items-start text-sm group carrello-elemento" data-price="${prezzoProdotto}" data-name="${nomeProdotto}">
             <div class="flex items-start gap-3">
-                <span class="text-oro-accento font-bold border border-oro-accento/50 bg-[#141414] px-2 py-0.5 text-xs rounded mt-0.5">1</span>
+                <span class="text-gray-400 font-light">1x</span>
                 <div>
-                    <span class="text-gray-200 block">${nomeProdotto}</span>
-                    <button onclick="rimuoviProdotto('${itemId}')" class="text-[10px] text-red-500 hover:text-red-400 uppercase tracking-widest mt-1 opacity-0 group-hover:opacity-100 transition cursor-pointer">Rimuovi</button>
+                    <h4 class="text-gray-200 font-medium">${nomeProdotto}</h4>
                 </div>
             </div>
-            <span class="text-white font-medium">€${prezzoProdotto.toFixed(2)}</span>
+            <div class="flex items-center gap-3">
+                <span class="text-gray-300 font-mono">€${prezzoProdotto.toFixed(2)}</span>
+                <button onclick="rimuoviProdotto('${itemId}')" class="text-gray-600 hover:text-red-400 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
     `;
 
-    const carrelloItems = document.getElementById('carrello-items');
-    if (carrelloItems) {
-        carrelloItems.insertAdjacentHTML('beforeend', htmlProdotto);
-        calcolaTotale();
+    const listaCarrello = document.getElementById('lista-carrello');
+    if (listaCarrello) {
+        listaCarrello.insertAdjacentHTML('beforeend', htmlProdotto);
     }
+
+    calcolaTotale();
     selectEl.selectedIndex = 0;
 };
 
-window.rimuoviProdotto = function(id) {
-    const elemento = document.getElementById(id);
-    if (elemento) elemento.remove();
-    
-    const contenitore = document.getElementById('carrello-items');
-    if (contenitore && contenitore.children.length === 0) {
-        contenitore.innerHTML = '<p id="carrello-vuoto" class="text-gray-600 text-xs text-center py-10 italic">Nessun prodotto selezionato.</p>';
+window.rimuoviProdotto = function(itemId) {
+    const item = document.getElementById(itemId);
+    if (item) {
+        item.remove();
+        
+        // Se non ci sono più elementi nel carrello, mostra di nuovo il testo vuoto
+        const elementiRimasti = document.querySelectorAll('.carrello-elemento');
+        if (elementiRimasti.length === 0) {
+            const msgVuoto = document.getElementById('carrello-vuoto');
+            if (msgVuoto) msgVuoto.classList.remove('hidden');
+        }
+        
+        calcolaTotale();
     }
-    calcolaTotale();
 };
 
 function calcolaTotale() {
@@ -251,74 +265,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     successMessage.classList.remove('hidden');
                     formReservation.reset();
                 } else {
-                    alert("Errore del server: " + risposta);
+                    // Sostituito alert nativo con log per coerenza di stile
+                    console.log("Errore server prenotazione: " + risposta);
                 }
             })
             .catch(errore => {
-                console.error("Errore:", errore);
-                alert("Errore di connessione. Verifica che il server sia attivo.");
-            });
-        });
-    }
-
-    // =====================================
-    // LOGICA INVIO ORDINI ONLINE
-    // =====================================
-    const btnInviaOrdine = document.querySelector('#menu-cards button.bg-oro-accento');
-    if (btnInviaOrdine && window.location.pathname.includes('ordini.html')) {
-        btnInviaOrdine.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const elementiCarrello = document.querySelectorAll('.carrello-elemento');
-            if (elementiCarrello.length === 0) {
-                alert("Il carrello è vuoto! Seleziona almeno un piatto.");
-                return;
-            }
-
-            const nomeCliente = prompt("Inserisci il tuo nome completo per la consegna:");
-            if (!nomeCliente) return;
-            const indirizzoCliente = prompt("Inserisci l'indirizzo di consegna:");
-            if (!indirizzoCliente) return;
-            const telefonoCliente = prompt("Inserisci il tuo numero di telefono:");
-            if (!telefonoCliente) return;
-            const noteCliente = prompt("Note aggiuntive per il corriere (opzionale):") || "";
-
-            let piattiOrdinati = [];
-            let totaleSenzaServizio = 0;
-            elementiCarrello.forEach(el => {
-                piattiOrdinati.push(el.getAttribute('data-name'));
-                totaleSenzaServizio += parseFloat(el.getAttribute('data-price'));
-            });
-
-            const stringaCarrello = piattiOrdinati.join(', ');
-            const totaleComplessivo = totaleSenzaServizio + COSTO_SERVIZIO;
-
-            const formData = new FormData();
-            formData.append('nome', nomeCliente);
-            formData.append('indirizzo', indirizzoCliente);
-            formData.append('telefono', telefonoCliente);
-            formData.append('carrello', stringaCarrello);
-            formData.append('totale', totaleComplessivo);
-            formData.append('note', noteCliente);
-
-            fetch('backend/salva_ordine.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(risposta => {
-                if (risposta.trim() === "success") {
-                    alert("Ordine inoltrato con successo! Salvato nel database.");
-                    const contenitore = document.getElementById('carrello-items');
-                    if (contenitore) contenitore.innerHTML = '<p id="carrello-vuoto" class="text-gray-600 text-xs text-center py-10 italic">Nessun prodotto selezionato.</p>';
-                    calcolaTotale();
-                } else {
-                    alert("Errore del server: " + risposta);
-                }
-            })
-            .catch(errore => {
-                console.error("Errore:", errore);
-                alert("Impossibile connettersi al server. Verifica MAMP.");
+                console.error("Errore di connessione:", errore);
             });
         });
     }
@@ -328,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================
     const modalFeedback = document.getElementById('feedback-modal');
     const modalContent = document.getElementById('modal-content');
-    const btnApriFeedback = document.getElementById('btn-apri-feedback');
+    const btnApriFeedback = document.getElementById('btn-api-feedback') || document.getElementById('btn-apri-feedback');
     const btnChiudiFeedback = document.getElementById('btn-chiudi-feedback');
     const formFeedback = modalFeedback ? modalFeedback.querySelector('form') : null;
     const contenedorTarjetas = document.querySelector('section.py-20 .flex.gap-6.overflow-x-auto');
@@ -432,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Pulsante "Inizia l'Ordine" con scroll fluido controllato da JS
+    // Pulsante "Inizia l'Ordine" con scroll fluido
     const btnInizioOrdine = document.getElementById('btn-inizio-ordine');
     if (btnInizioOrdine) {
         btnInizioOrdine.addEventListener('click', () => {
@@ -440,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event Listener per i pulsanti di aggiunta prodotto (rimossi gli onclick dall'HTML)
+    // Event Listener per aggiunta prodotti
     const btnAddCarne = document.getElementById('btn-add-carne');
     if (btnAddCarne) {
         btnAddCarne.addEventListener('click', () => aggiungiProdotto('select-carne'));
@@ -455,4 +407,91 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAddContorno) {
         btnAddContorno.addEventListener('click', () => aggiungiProdotto('select-contorno'));
     }
+
+
+    // =====================================
+    // LOGICA UNIFICATA MODAL CHECKOUT
+    // =====================================
+    const checkoutModal = document.getElementById('checkout-modal');
+    const modalCorpo = document.getElementById('modal-corpo');
+    const btnApriCheckout = document.getElementById('btn-apri-checkout');
+    const btnChiudiModal = document.getElementById('btn-chiudi-modal');
+    const checkoutOverlay = document.getElementById('checkout-overlay');
+    const formCheckout = document.getElementById('form-checkout');
+
+    // Funzione per Aprire il Modal in modo elegante
+    if (btnApriCheckout) {
+        btnApriCheckout.addEventListener('click', () => {
+            const elementiCarrello = document.querySelectorAll('.carrello-elemento');
+            
+            // Se il carrello è vuoto, usciamo silenziosamente senza bloccare la pagina con alert
+            if (elementiCarrello.length === 0) {
+                return;
+            }
+            
+            if (checkoutModal && modalCorpo) {
+                checkoutModal.classList.remove('opacity-0', 'pointer-events-none');
+                modalCorpo.classList.remove('scale-95');
+                modalCorpo.classList.add('scale-100');
+            }
+        });
+    }
+
+    // Funzione per Chiudere il Modal
+    function chiudiCheckoutModal() {
+        if (checkoutModal && modalCorpo) {
+            checkoutModal.classList.add('opacity-0', 'pointer-events-none');
+            modalCorpo.classList.remove('scale-100');
+            modalCorpo.classList.add('scale-95');
+        }
+    }
+
+    if (btnChiudiModal) btnChiudiModal.addEventListener('click', chiudiCheckoutModal);
+    if (checkoutOverlay) checkoutOverlay.addEventListener('click', chiudiCheckoutModal);
+
+    // Gestione dell'invio dei dati tramite il form elegante
+    if (formCheckout) {
+        formCheckout.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('checkout-nome').value;
+            const telefono = document.getElementById('checkout-telefono').value;
+            const indirizzo = document.getElementById('checkout-indirizzo').value;
+            const note = document.getElementById('checkout-note').value;
+            
+            const totaleTesto = document.getElementById('label-totale').innerText;
+            const totaleNumero = parseFloat(totaleTesto.replace('€', '').trim());
+            
+            const elementiCarrello = document.querySelectorAll('.carrello-elemento');
+            let riepilogoProdotti = [];
+            elementiCarrello.forEach(item => {
+                const nomeProdotto = item.getAttribute('data-name');
+                const prezzoProdotto = item.getAttribute('data-price');
+                riepilogoProdotti.push(`${nomeProdotto} (€${prezzoProdotto})`);
+            });
+            const dettaglioCarrelloTesto = riepilogoProdotti.join(', ');
+
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('telefono', telefono);
+            formData.append('indirizzo', indirizzo);
+            formData.append('note', note);
+            formData.append('totale', totaleNumero);
+            formData.append('carrello', dettaglioCarrelloTesto);
+
+            fetch('backend/salva_ordine.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                chiudiCheckoutModal();
+                // Reindirizza alla schermata di successo in modo nativo e pulito
+                window.location.href = "ordini.html?status=success";
+            })
+            .catch(error => {
+                console.error("Errore durante l'invio:", error);
+            });
+        });
+    }
+
 });
