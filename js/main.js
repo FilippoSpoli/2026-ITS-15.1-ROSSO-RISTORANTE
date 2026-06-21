@@ -144,72 +144,82 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('reservationForm');
 
     if (form) {
-
         const card = document.getElementById('reservation-card');
         const successMessage = document.getElementById('successMessage');
         const confirmationText = document.getElementById('confirmationText');
-
         const dateInput = document.getElementById('data');
 
+        // Impedisce di selezionare date passate nel calendario dell'HTML
         if (dateInput) {
             const today = new Date().toISOString().split('T')[0];
             dateInput.min = today;
         }
 
         form.addEventListener('submit', function(e) {
-
+            // Blocchiamo il reload della pagina
             e.preventDefault();
 
+            // Recuperiamo TUTTI i 7 campi inseriti dall'utente nell'HTML
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const telefono = document.getElementById('telefono').value;
-            const persone = document.getElementById('persone').value;
+            const persone = document.getElementById('persone').value; 
             const data = document.getElementById('data').value;
             const orario = document.getElementById('orario').value;
             const note = document.getElementById('note').value;
 
-            const prenotazione = {
-                id: Date.now(),
-                nome,
-                email,
-                telefono,
-                persone,
-                data,
-                orario,
-                note,
-                dataCreazione: new Date().toLocaleString('it-IT')
-            };
+            // Prepariamo i dati nello standard FormData per il PHP
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('email', email);
+            formData.append('telefono', telefono);
+            formData.append('data', data);
+            formData.append('ora', orario);      
+            formData.append('ospiti', persone);  
+            formData.append('note', note);
 
-            let prenotazioni =
-                JSON.parse(localStorage.getItem('prenotazioni')) || [];
+            // Inviamo i dati al file PHP che si trova nella stessa cartella root
+            fetch('backend/salva_prenotazione.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(risposta => {
+                if (risposta.trim() === "success") {
+                    // Formattiamo la data per mostrarla elegantemente nella conferma
+                    const dataFormattata = new Date(data).toLocaleDateString('it-IT', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
 
-            prenotazioni.push(prenotazione);
+                    // Generiamo il messaggio di successo grafico inserendo i dati reali
+                    confirmationText.innerHTML = `
+                        Grazie <span class=\"text-oro-accento font-semibold\">${nome}</span>!<br><br>
+                        La tua prenotazione per
+                        <span class=\"text-white font-semibold\">${persone}</span>
+                        persone il
+                        <span class=\"text-white font-semibold\">${dataFormattata}</span>
+                        alle ore
+                        <span class=\"text-white font-semibold\">${orario}</span>
+                        è stata salvata direttamente nel nostro Database.<br><br>
+                        Ti aspettiamo per una serata indimenticabile.
+                    `;
 
-            localStorage.setItem(
-                'prenotazioni',
-                JSON.stringify(prenotazioni)
-            );
-
-            const dataFormattata = new Date(data).toLocaleDateString('it-IT', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
+                    // Nascondiamo il form e mostriamo la schermata di successo
+                    card.classList.add('hidden');
+                    successMessage.classList.remove('hidden');
+                    
+                    // Svuotiamo i campi del form
+                    form.reset();
+                } else {
+                    alert("Errore del server: " + risposta);
+                }
+            })
+            .catch(errore => {
+                console.error("Errore di connessione:", errore);
+                alert("Impossibile connettersi al server. Verifica che XAMPP/MAMP sia attivo.");
             });
-
-            confirmationText.innerHTML = `
-                Grazie <span class="text-oro-accento font-semibold">${nome}</span>!<br><br>
-                La tua prenotazione per
-                <span class="text-white font-semibold">${persone}</span>
-                persone il
-                <span class="text-white font-semibold">${dataFormattata}</span>
-                alle ore
-                <span class="text-white font-semibold">${orario}</span>
-                è stata registrata.<br><br>
-                Ti aspettiamo!
-            `;
-
-            card.classList.add('hidden');
-            successMessage.classList.remove('hidden');
         });
     }
 
