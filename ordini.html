@@ -7,53 +7,14 @@
     <title>Steakhouse - Ordina Online</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sfondo-scuro': '#0a0a0a',
-                        'sfondo-card': '#141414',
-                        'oro-accento': '#C5A059',
-                        'oro-hover': '#e6bf70'
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'serif'],
-                        sans: ['"Lato"', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* Estilos para el scroll del carrito */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #C5A059;
-        }
-    </style>
 </head>
 
 <body class="bg-sfondo-scuro text-white font-sans overflow-x-hidden">
 
     <div id="contenitore-principale"
-        class="transition-opacity duration-1000 ease-in min-h-screen flex flex-col relative">
+        class="transition-opacity duration-1000 ease-in min-h-screen flex flex-col relative opacity-0">
 
-        <!-- INIZIO NAVIGAZIONE -->
         <nav class="container mx-auto px-8 py-8 flex justify-between items-center z-50 relative">
             <div class="text-3xl font-serif italic tracking-wide text-gray-200">
                 <a href="index.html">Steakhouse</a>
@@ -75,18 +36,12 @@
             </button>
         </nav>
 
-        <!-- INIZIO HERO -->
         <main class="relative w-full min-h-[60vh] flex items-center z-10 mt-8 mb-32 container mx-auto px-4 md:px-8">
-
-            <!-- Effetto luce sferica opaca sullo sfondo -->
             <div
                 class="absolute top-1/2 right-1/4 transform translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-oro-accento opacity-[0.03] rounded-full blur-3xl pointer-events-none z-0">
             </div>
 
-            <!-- Griglia a 2 colonne -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center w-full relative z-20">
-
-                <!-- Colonna Sinistra: Testo -->
                 <div class="space-y-6 text-center md:text-left">
                     <span
                         class="text-oro-accento tracking-widest uppercase text-xs font-bold border-b border-oro-accento/50 pb-2 inline-block">
@@ -102,35 +57,27 @@
                         tuo ordine in pochi click e preparati a un'esperienza unica.
                     </p>
                     <div class="pt-6">
-                        <button onclick="window.scrollBy({ top: 600, behavior: 'smooth' })"
+                        <button id="btn-inizio-ordine"
                             class="bg-oro-accento text-[#050505] text-xs font-bold tracking-widest uppercase px-10 py-4 rounded-sm hover:bg-white transition duration-500 shadow-[0_0_20px_rgba(197,160,89,0.2)]">
                             Inizia l'Ordine
                         </button>
                     </div>
                 </div>
 
-                <!-- Colonna Destra: Immagine Statica (Stile Premium Dark) -->
                 <div class="relative flex justify-center md:justify-end">
-                    <!-- Alone dorato dietro l'immagine per dare profondità -->
                     <div
                         class="absolute inset-0 bg-gradient-to-tr from-oro-accento/20 to-transparent rounded-3xl z-0 blur-2xl transform scale-110 opacity-60">
                     </div>
-
-                    <!-- Immagine locale "hero-bistecca.jpg" -->
                     <img src="img/hero-bistecca.jpg" alt="Taglio di carne premium"
                         class="w-full max-w-[350px] lg:max-w-[550px] h-auto object-cover rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-gray-800 relative z-10">
                 </div>
-
             </div>
         </main>
-        <!-- FINE HERO -->
 
-        <!-- INIZIO CARDS E CARRELLO -->
         <section
             class="container mx-auto px-4 md:px-8 pt-16 pb-4 mb-20 grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12 z-10 relative"
             id="menu-cards">
 
-            <!-- Colonna Sinistra: Cards -->
             <div class="lg:col-span-2 space-y-8">
                 <div class="mb-8 border-b border-gray-800 pb-4">
                     <h2 class="font-serif text-3xl md:text-4xl text-white">Componi il tuo Menu</h2>
@@ -138,7 +85,6 @@
                         desideri</p>
                 </div>
 
-                <!-- Card 1: Carne -->
                 <div
                     class="bg-sfondo-card border border-gray-800 p-6 md:p-8 rounded-xl shadow-xl hover:border-oro-accento/40 transition duration-300">
                     <div class="flex items-center gap-4 mb-6">
@@ -174,7 +120,7 @@
                                 </svg>
                             </div>
                         </div>
-                        <button onclick="aggiungiProdotto('select-carne')"
+                        <button id="btn-add-carne"
                             class="bg-transparent border border-oro-accento text-oro-accento hover:bg-oro-accento hover:text-[#050505] transition duration-300 px-8 py-3 text-xs font-bold tracking-widest uppercase rounded-sm shrink-0 flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -185,7 +131,6 @@
                     </div>
                 </div>
 
-                <!-- Card 2: Vini e Bevande -->
                 <div
                     class="bg-sfondo-card border border-gray-800 p-6 md:p-8 rounded-xl shadow-xl hover:border-oro-accento/40 transition duration-300">
                     <div class="flex items-center gap-4 mb-6">
@@ -225,7 +170,7 @@
                                 </svg>
                             </div>
                         </div>
-                        <button onclick="aggiungiProdotto('select-drink')"
+                        <button id="btn-add-drink"
                             class="bg-transparent border border-oro-accento text-oro-accento hover:bg-oro-accento hover:text-[#050505] transition duration-300 px-8 py-3 text-xs font-bold tracking-widest uppercase rounded-sm shrink-0 flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -236,7 +181,6 @@
                     </div>
                 </div>
 
-                <!-- Card 3: Contorni -->
                 <div
                     class="bg-sfondo-card border border-gray-800 p-6 md:p-8 rounded-xl shadow-xl hover:border-oro-accento/40 transition duration-300">
                     <div class="flex items-center gap-4 mb-6">
@@ -270,7 +214,7 @@
                                 </svg>
                             </div>
                         </div>
-                        <button onclick="aggiungiProdotto('select-contorno')"
+                        <button id="btn-add-contorno"
                             class="bg-transparent border border-oro-accento text-oro-accento hover:bg-oro-accento hover:text-[#050505] transition duration-300 px-8 py-3 text-xs font-bold tracking-widest uppercase rounded-sm shrink-0 flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -282,24 +226,19 @@
                 </div>
             </div>
 
-            <!-- Colonna Destra: Carrello (Ora prende tutto lo spazio disponibile in altezza) -->
             <div class="lg:col-span-1">
-                <!-- Aggiunto h-[calc(100vh-8rem)] e flex flex-col per estendersi in basso -->
                 <div
                     class="bg-[#0a0a0a] border border-gray-800 p-6 md:p-8 rounded-xl sticky top-24 shadow-2xl flex flex-col h-[calc(100vh-8rem)]">
-
                     <h2 class="font-serif text-2xl text-white mb-2 shrink-0">Il Tuo Ordine</h2>
                     <p
                         class="text-[10px] uppercase tracking-widest text-gray-500 border-b border-gray-800 pb-4 mb-6 shrink-0">
                         Riepilogo e Pagamento</p>
 
-                    <!-- L'elenco prodotti ha flex-grow per prendere tutto lo spazio vuoto in mezzo -->
                     <div id="carrello-items" class="space-y-4 mb-8 flex-grow overflow-y-auto pr-2 custom-scrollbar">
                         <p id="carrello-vuoto" class="text-gray-600 text-xs text-center py-10 italic">Nessun prodotto
                             selezionato.</p>
                     </div>
 
-                    <!-- La parte dei totali rimane fissata sul fondo -->
                     <div class="border-t border-gray-800 pt-6 space-y-3 mb-8 text-sm text-gray-400 shrink-0">
                         <div class="flex justify-between">
                             <span>Subtotale</span>
@@ -323,19 +262,13 @@
             </div>
 
         </section>
-
     </div>
 
-    <!-- Inizio sezione footer -->
     <footer class="bg-[#050505] border-t border-gray-900 pt-20 pb-10 relative z-10">
         <div class="container mx-auto px-8 md:px-16">
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
-
                 <div class="space-y-6">
-                    <div class="text-3xl font-serif italic tracking-wide text-oro-accento">
-                        Steakhouse
-                    </div>
+                    <div class="text-3xl font-serif italic tracking-wide text-oro-accento">Steakhouse</div>
                     <p class="text-gray-500 text-sm leading-relaxed max-w-xs">
                         L'eccellenza della carne nel cuore di Genova. Un'esperienza sensoriale dove la materia prima è
                         l'unica protagonista.
@@ -359,8 +292,7 @@
                 <div>
                     <h4
                         class="font-serif text-white mb-8 tracking-widest uppercase text-xs border-b border-oro-accento/20 pb-2 inline-block">
-                        Contatti
-                    </h4>
+                        Contatti</h4>
                     <ul class="text-gray-500 text-sm space-y-5">
                         <li class="flex items-start space-x-4">
                             <span class="text-oro-accento mt-1">
@@ -399,8 +331,7 @@
                 <div>
                     <h4
                         class="font-serif text-white mb-8 tracking-widest uppercase text-xs border-b border-oro-accento/20 pb-2 inline-block">
-                        Orari di Apertura
-                    </h4>
+                        Orari di Apertura</h4>
                     <ul class="text-gray-500 text-sm space-y-3">
                         <li class="flex justify-between border-b border-gray-900 pb-2">
                             <span>Lunedì - Giovedì</span>
@@ -416,7 +347,6 @@
                         </li>
                     </ul>
                 </div>
-
             </div>
 
             <div
@@ -427,7 +357,6 @@
                 <div class="flex space-x-8 text-[10px] tracking-widest uppercase text-gray-600 items-center">
                     <a href="#" class="hover:text-oro-accento transition">Privacy Policy</a>
                     <a href="#" class="hover:text-oro-accento transition">Cookie Policy</a>
-
                     <a href="admin.html"
                         class="flex items-center space-x-1.5 hover:text-oro-accento transition duration-300">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -441,9 +370,9 @@
                     </a>
                 </div>
             </div>
-
         </div>
     </footer>
+
     <script src="js/main.js"></script>
 </body>
 

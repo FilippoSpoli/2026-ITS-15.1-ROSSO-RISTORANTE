@@ -431,4 +431,28 @@ document.addEventListener('DOMContentLoaded', () => {
             if(btnChiudiFeedback) btnChiudiFeedback.click();
         });
     }
+
+    // Pulsante "Inizia l'Ordine" con scroll fluido controllato da JS
+    const btnInizioOrdine = document.getElementById('btn-inizio-ordine');
+    if (btnInizioOrdine) {
+        btnInizioOrdine.addEventListener('click', () => {
+            window.scrollBy({ top: 600, behavior: 'smooth' });
+        });
+    }
+
+    // Event Listener per i pulsanti di aggiunta prodotto (rimossi gli onclick dall'HTML)
+    const btnAddCarne = document.getElementById('btn-add-carne');
+    if (btnAddCarne) {
+        btnAddCarne.addEventListener('click', () => aggiungiProdotto('select-carne'));
+    }
+
+    const btnAddDrink = document.getElementById('btn-add-drink');
+    if (btnAddDrink) {
+        btnAddDrink.addEventListener('click', () => aggiungiProdotto('select-drink'));
+    }
+
+    const btnAddContorno = document.getElementById('btn-add-contorno');
+    if (btnAddContorno) {
+        btnAddContorno.addEventListener('click', () => aggiungiProdotto('select-contorno'));
+    }
 });
