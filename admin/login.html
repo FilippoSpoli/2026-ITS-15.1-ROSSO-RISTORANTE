@@ -11,114 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="../css/style.css">
-
-    <style>
-        :root {
-            --main-color: #C5A059;
-            --main-hover: #e6bf70;
-            --bg-dark: #0a0a0a;
-            --card-bg: #141414;
-        }
-
-        body {
-            background: linear-gradient(180deg, #080808 0%, #121212 100%);
-            color: #f7f7f7;
-            font-family: 'Lato', sans-serif;
-        }
-
-        .login-card {
-            max-width: 420px;
-            margin: 8% auto;
-            padding: 1rem;
-        }
-
-        .card {
-            background: rgba(20, 20, 20, 0.94);
-            border: 1px solid rgba(197, 160, 89, 0.18);
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-        }
-
-        .card-header {
-            background: transparent;
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .card-header .h1 {
-            color: var(--main-color);
-            letter-spacing: 0.08em;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .card-body {
-            background: transparent;
-        }
-
-        .login-box-msg {
-            color: #bfbfbf;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            background: #121212;
-            border: 1px solid #2b2b2b;
-            color: #e8e8e8;
-        }
-
-        .form-control:focus {
-            outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.2);
-            border-color: var(--main-color);
-        }
-
-        .input-group-text {
-            background: #141414;
-            color: var(--main-color);
-            border: 1px solid #2b2b2b;
-        }
-
-        .btn.bg-oro-accento {
-            background: var(--main-color) !important;
-            border-color: var(--main-color) !important;
-            color: #050505 !important;
-        }
-
-        .btn.bg-oro-accento:hover {
-            background: var(--main-hover) !important;
-            border-color: var(--main-hover) !important;
-        }
-
-        .help-text,
-        .text-danger,
-        .text-gray-500 {
-            color: #d1d1d1;
-        }
-
-        .login-footer {
-            margin-top: 1rem;
-            text-align: center;
-            color: #8f8f8f;
-        }
-
-        .login-footer a {
-            color: var(--main-color);
-            text-decoration: none;
-        }
-
-        .card-outline.card-primary .card-header {
-            border-color: transparent;
-        }
-
-        .card.card-outline.card-primary {
-            border-top: none !important;
-            border-color: rgba(197, 160, 89, 0.18) !important;
-        }
-
-        .login-page {
-            background-image: linear-gradient(180deg, #090909 0%, #121212 100%);
-        }
-    </style>
 </head>
 
 <body class="hold-transition login-page">
@@ -163,7 +55,7 @@
             var u = document.getElementById('username').value.trim();
             var p = document.getElementById('password').value;
             if (u === 'admin' && p === 'admin123') {
-                window.location.href = 'admin.html';
+                window.location.href = 'dashboard.html';
             } else {
                 var err = document.getElementById('errorMsg');
                 err.style.display = 'block';

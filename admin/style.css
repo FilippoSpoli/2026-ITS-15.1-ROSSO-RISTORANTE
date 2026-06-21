@@ -1,0 +1,77 @@
+/* Variabili del brand per l'amministrazione */
+:root {
+    --main-color: #C5A059;
+    --main-hover: #e6bf70;
+    --bg-dark: #0a0a0a;
+    --card-bg: #141414;
+}
+
+/* Sfondo scuro e palette personalizzata per layout AdminLTE */
+body {
+    background-color: var(--bg-dark);
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.content-wrapper {
+    background-color: #0f0f0f !important;
+    color: #f5f5f5;
+}
+
+/* Sidebar e Navbar personalizzate scure */
+.main-header, .main-sidebar, .main-footer {
+    background-color: #050505 !important;
+    border-color: #1a1a1a !important;
+    color: #aeaeae !important;
+}
+
+.main-header .nav-link, .main-footer strong {
+    color: #fff !important;
+}
+
+/* Elementi Oro */
+.text-oro-accento {
+    color: var(--main-color) !important;
+}
+.bg-oro-accento {
+    background-color: var(--main-color) !important;
+    color: #050505 !important;
+}
+.bg-oro-accento:hover {
+    background-color: var(--main-hover) !important;
+    color: #050505 !important;
+}
+
+/* Link attivo della Sidebar */
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+    background-color: var(--main-color) !important;
+    color: #050505 !important;
+    font-weight: bold;
+}
+
+/* Card scure per i moduli e tabelle */
+.card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid #222 !important;
+    color: #fff;
+}
+.card-header {
+    border-bottom: 1px solid #222 !important;
+}
+
+/* Tabelle ottimizzate per l'interfaccia */
+.table {
+    color: #fff !important;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.img-anteprima {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
