@@ -1,77 +1,138 @@
-/* Variabili del brand per l'amministrazione */
+/* Variabili del brand per l'amministrazione - VIA DI MEZZO (SLATE & GOLD) */
 :root {
-    --main-color: #C5A059;
+    --main-color: #C5A059;       /* Oro classico del brand */
     --main-hover: #e6bf70;
-    --bg-dark: #0a0a0a;
-    --card-bg: #141414;
+    --bg-slate: #1e222b;         /* Sfondo principale grigio scuro morbido */
+    --card-bg: #242936;          /* Sfondo delle card leggermente più chiaro del background */
+    --sidebar-bg: #181b23;       /* Sidebar antracite */
+    --text-light: #f5f6f8;       /* Testo principale chiaro e leggibile */
+    --text-muted: #a0aec0;       /* Testo secondario */
 }
 
-/* Sfondo scuro e palette personalizzata per layout AdminLTE */
+/* Struttura generale del Layout */
 body {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-slate);
     font-family: 'Source Sans Pro', sans-serif;
+    color: var(--text-light);
 }
 
 .content-wrapper {
-    background-color: #0f0f0f !important;
-    color: #f5f5f5;
+    background-color: var(--bg-slate) !important;
+    color: var(--text-light) !important;
 }
 
-/* Sidebar e Navbar personalizzate scure */
-.main-header, .main-sidebar, .main-footer {
-    background-color: #050505 !important;
-    border-color: #1a1a1a !important;
-    color: #aeaeae !important;
+/* Navbar superiore (Bilanciata scura soft) */
+.main-header {
+    background-color: var(--sidebar-bg) !important;
+    border-bottom: 1px solid #2d3748 !important;
+    color: var(--text-light) !important;
 }
 
-.main-header .nav-link, .main-footer strong {
-    color: #fff !important;
+.main-header .nav-link {
+    color: var(--text-light) !important;
 }
 
-/* Elementi Oro */
+.main-header .nav-link:hover {
+    color: var(--main-color) !important;
+}
+
+/* Sidebar laterale antracite */
+.main-sidebar {
+    background-color: var(--sidebar-bg) !important;
+    border-right: 1px solid #2d3748 !important;
+}
+
+/* Scritta del logo Steakhouse Admin */
+.main-sidebar .brand-link {
+    border-bottom: 1px solid #2d3748 !important;
+    color: var(--text-light) !important;
+}
+
 .text-oro-accento {
     color: var(--main-color) !important;
 }
+
+/* Voci di menu della sidebar */
+.sidebar .nav-link {
+    color: var(--text-muted) !important;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+}
+
+/* Voce di menu Attiva (Oro pieno con contrasto scuro) */
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active,
+.nav-pills .nav-link.active {
+    background-color: var(--main-color) !important;
+    color: #181b23 !important;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(197, 160, 89, 0.2);
+}
+
+/* Footer */
+.main-footer {
+    background-color: var(--sidebar-bg) !important;
+    border-top: 1px solid #2d3748 !important;
+    color: var(--text-muted) !important;
+}
+
+/* Elementi e Bottoni Oro */
 .bg-oro-accento {
     background-color: var(--main-color) !important;
-    color: #050505 !important;
+    color: #181b23 !important;
+    font-weight: bold;
 }
 .bg-oro-accento:hover {
     background-color: var(--main-hover) !important;
-    color: #050505 !important;
+    color: #181b23 !important;
 }
 
-/* Link attivo della Sidebar */
-.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
-    background-color: var(--main-color) !important;
-    color: #050505 !important;
-    font-weight: bold;
-}
-
-/* Card scure per i moduli e tabelle */
+/* Card Slate (Grigio protettivo, non nero) */
 .card {
     background-color: var(--card-bg) !important;
-    border: 1px solid #222 !important;
-    color: #fff;
+    border: 1px solid #2d3748 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+    color: var(--text-light) !important;
 }
+
 .card-header {
-    border-bottom: 1px solid #222 !important;
+    border-bottom: 1px solid #2d3748 !important;
+    background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Tabelle ottimizzate per l'interfaccia */
+/* Tabelle interne alle card */
 .table {
-    color: #fff !important;
-}
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(255, 255, 255, 0.02) !important;
-}
-.table-hover tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-light) !important;
 }
 
-.img-anteprima {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 4px;
+.table th {
+    border-top: 1px solid #2d3748 !important;
+    border-bottom: 2px solid #2d3748 !important;
+    background-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-light);
+}
+
+.table td {
+    border-top: 1px solid #2d3748 !important;
+}
+
+/* Campi di input dei form */
+.form-control {
+    background-color: #2d3748 !important;
+    color: #ffffff !important;
+    border: 1px solid #4a5568 !important;
+}
+
+.form-control:focus {
+    border-color: var(--main-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25) !important;
+}
+
+/* Contenitori KPI della Dashboard (Manteniamo i colori Bootstrap ma attenuati) */
+.small-box {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+    color: #ffffff !important;
 }
