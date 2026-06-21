@@ -79,3 +79,18 @@
 .animate-infinite-scroll:hover {
   animation-play-state: paused;
 }
+
+/* Stili per lo scroll del carrello */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #C5A059;
+}

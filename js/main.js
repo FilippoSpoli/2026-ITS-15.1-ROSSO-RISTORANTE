@@ -1,76 +1,157 @@
-tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sfondo-scuro': '#0a0a0a',
-                        'sfondo-card': '#141414',
-                        'oro-accento': '#C5A059',
-                        'oro-hover': '#e6bf70'
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'serif'],
-                        sans: ['"Lato"', 'sans-serif']
-                    }
+if (typeof tailwind !== 'undefined') {
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'sfondo-scuro': '#0a0a0a',
+                    'sfondo-card': '#141414',
+                    'oro-accento': '#C5A059',
+                    'oro-hover': '#e6bf70'
+                },
+                fontFamily: {
+                    serif: ['"Playfair Display"', 'serif'],
+                    sans: ['"Lato"', 'sans-serif']
                 }
             }
         }
+    }
+}
 
-/**
- * Logica di base per l'inizializzazione della pagina e interazioni
- */
+// =====================================
+// FUNZIONI GLOBALI (CARRELLO ORDINI)
+// =====================================
+const COSTO_SERVIZIO = 3.00;
+
+window.aggiungiProdotto = function(selectId) {
+    const selectEl = document.getElementById(selectId);
+    if (!selectEl) return;
+    
+    const option = selectEl.options[selectEl.selectedIndex];
+    if (option.disabled || option.value === "") return;
+
+    const nomeProdotto = option.value;
+    const prezzoProdotto = parseFloat(option.getAttribute('data-price'));
+    const itemId = 'item-' + Date.now(); 
+
+    const msgVuoto = document.getElementById('carrello-vuoto');
+    if (msgVuoto) msgVuoto.classList.add('hidden');
+
+    const htmlProdotto = `
+        <div id="${itemId}" class="flex justify-between items-start text-sm group carrello-elemento" data-price="${prezzoProdotto}" data-name="${nomeProdotto}">
+            <div class="flex items-start gap-3">
+                <span class="text-gray-400 font-light">1x</span>
+                <div>
+                    <h4 class="text-gray-200 font-medium">${nomeProdotto}</h4>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-gray-300 font-mono">€${prezzoProdotto.toFixed(2)}</span>
+                <button onclick="rimuoviProdotto('${itemId}')" class="text-gray-600 hover:text-red-400 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `;
+
+    const listaCarrello = document.getElementById('lista-carrello');
+    if (listaCarrello) {
+        listaCarrello.insertAdjacentHTML('beforeend', htmlProdotto);
+    }
+
+    calcolaTotale();
+    selectEl.selectedIndex = 0;
+};
+
+window.rimuoviProdotto = function(itemId) {
+    const item = document.getElementById(itemId);
+    if (item) {
+        item.remove();
+        
+        // Se non ci sono più elementi nel carrello, mostra di nuovo il testo vuoto
+        const elementiRimasti = document.querySelectorAll('.carrello-elemento');
+        if (elementiRimasti.length === 0) {
+            const msgVuoto = document.getElementById('carrello-vuoto');
+            if (msgVuoto) msgVuoto.classList.remove('hidden');
+        }
+        
+        calcolaTotale();
+    }
+};
+
+function calcolaTotale() {
+    const elementi = document.querySelectorAll('.carrello-elemento');
+    let subTotale = 0;
+
+    elementi.forEach(el => {
+        subTotale += parseFloat(el.getAttribute('data-price'));
+    });
+
+    const lblSubtotale = document.getElementById('label-subtotale');
+    const lblServizio = document.getElementById('label-servizio');
+    const lblTotale = document.getElementById('label-totale');
+
+    if (lblSubtotale) lblSubtotale.innerText = '€' + subTotale.toFixed(2);
+    
+    if (subTotale > 0) {
+        if (lblServizio) lblServizio.innerText = '€' + COSTO_SERVIZIO.toFixed(2);
+        if (lblTotale) lblTotale.innerText = '€' + (subTotale + COSTO_SERVIZIO).toFixed(2);
+    } else {
+        if (lblServizio) lblServizio.innerText = '€0.00';
+        if (lblTotale) lblTotale.innerText = '€0.00';
+    }
+}
+
+
+// =====================================
+// INIZIALIZZAZIONE DOM
+// =====================================
 document.addEventListener('DOMContentLoaded', () => {
+    
     // 1. Dissolvenza in entrata della pagina
     const contenitore = document.getElementById('contenitore-principale');
-    setTimeout(() => {
-        contenitore.classList.remove('opacity-0');
-    }, 150);
+    if (contenitore) {
+        setTimeout(() => {
+            contenitore.classList.remove('opacity-0');
+        }, 150);
+    }
 
     // 2. Gestione del Menu Mobile (Hamburger)
     const btnMenu = document.getElementById('menu-btn');
     const menuScorrevole = document.getElementById('mobile-menu');
-    const linee = btnMenu.querySelectorAll('span');
+    const linee = btnMenu ? btnMenu.querySelectorAll('span') : [];
 
-    btnMenu.addEventListener('click', () => {
-        // Mostra o nascondi il menu a schermo intero
-        menuScorrevole.classList.toggle('opacity-0');
-        menuScorrevole.classList.toggle('pointer-events-none');
+    if (btnMenu && menuScorrevole) {
+        btnMenu.addEventListener('click', () => {
+            menuScorrevole.classList.toggle('opacity-0');
+            menuScorrevole.classList.toggle('pointer-events-none');
 
-        // Animazione dell'icona Hamburger in una "X"
-        linee[0].classList.toggle('translate-y-2');
-        linee[0].classList.toggle('rotate-45');
-        
-        linee[1].classList.toggle('opacity-0');
-        
-        linee[2].classList.toggle('-translate-y-2');
-        linee[2].classList.toggle('-rotate-45');
-        
-        // Blocca lo scroll della pagina quando il menu è aperto
-        document.body.classList.toggle('overflow-hidden');
-    });
-
-    // Slider de Desvanecimiento (Fade) para la sección "Scopri la Nostra Storia"
-    const fadeImages = document.querySelectorAll('#bg-fade-slider .slide-img');
-    
-    if (fadeImages.length > 0) {
-        let currentImgIndex = 0;
-
-        setInterval(() => {
-            // Oculta la imagen actual
-            fadeImages[currentImgIndex].classList.remove('opacity-100');
-            fadeImages[currentImgIndex].classList.add('opacity-0');
-
-            // Calcula el índice de la siguiente imagen
-            currentImgIndex = (currentImgIndex + 1) % fadeImages.length;
-
-            // Muestra la siguiente imagen
-            fadeImages[currentImgIndex].classList.remove('opacity-0');
-            fadeImages[currentImgIndex].classList.add('opacity-100');
+            linee[0].classList.toggle('translate-y-2');
+            linee[0].classList.toggle('rotate-45');
+            linee[1].classList.toggle('opacity-0');
+            linee[2].classList.toggle('-translate-y-2');
+            linee[2].classList.toggle('-rotate-45');
             
-        }, 2000); // Cambia de imagen cada 2segundos 
+            document.body.classList.toggle('overflow-hidden');
+        });
     }
 
-    // Nuovo carosello a schede con frecce e indicatori
-   const featureCarousel = document.getElementById('feature-carousel');
+    // 3. Slider Fade ("Scopri la Nostra Storia")
+    const fadeImages = document.querySelectorAll('#bg-fade-slider .slide-img');
+    if (fadeImages.length > 0) {
+        let currentImgIndex = 0;
+        setInterval(() => {
+            fadeImages[currentImgIndex].classList.remove('opacity-100');
+            fadeImages[currentImgIndex].classList.add('opacity-0');
+            currentImgIndex = (currentImgIndex + 1) % fadeImages.length;
+            fadeImages[currentImgIndex].classList.remove('opacity-0');
+            fadeImages[currentImgIndex].classList.add('opacity-100');
+        }, 2000);
+    }
+
+    // 4. Carosello a schede
+    const featureCarousel = document.getElementById('feature-carousel');
     if (featureCarousel) {
         const track = featureCarousel.querySelector('.carousel-track');
         const slides = Array.from(track.children);
@@ -89,11 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const moveToSlide = (index) => {
-            if (index < 0) {
-                index = slides.length - 1;
-            } else if (index >= slides.length) {
-                index = 0;
-            }
+            if (index < 0) { index = slides.length - 1; } 
+            else if (index >= slides.length) { index = 0; }
             track.style.transform = `translateX(-${index * 100}%)`;
             currentIndex = index;
             updateDots(index);
@@ -114,9 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const dot = document.createElement('button');
             dot.type = 'button';
             dot.className = 'w-3 h-3 rounded-full bg-gray-700 transition';
-            if (slideIndex === 0) {
-                dot.classList.add('bg-oro-accento');
-            }
+            if (slideIndex === 0) dot.classList.add('bg-oro-accento');
             dot.addEventListener('click', () => {
                 moveToSlide(slideIndex);
                 resetCarousel();
@@ -124,31 +200,19 @@ document.addEventListener('DOMContentLoaded', () => {
             dotsNav.appendChild(dot);
         });
 
-        prevButton.addEventListener('click', () => {
-            moveToSlide(currentIndex - 1);
-            resetCarousel();
-        });
-
-        nextButton.addEventListener('click', () => {
-            moveToSlide(currentIndex + 1);
-            resetCarousel();
-        });
-
-             startCarousel();
+        prevButton.addEventListener('click', () => { moveToSlide(currentIndex - 1); resetCarousel(); });
+        nextButton.addEventListener('click', () => { moveToSlide(currentIndex + 1); resetCarousel(); });
+        startCarousel();
     }
 
     // =====================================
-    // PRENOTAZIONI
+    // LOGICA PRENOTAZIONI
     // =====================================
-
-    const form = document.getElementById('reservationForm');
-
-    if (form) {
-
+    const formReservation = document.getElementById('reservationForm');
+    if (formReservation) {
         const card = document.getElementById('reservation-card');
         const successMessage = document.getElementById('successMessage');
         const confirmationText = document.getElementById('confirmationText');
-
         const dateInput = document.getElementById('data');
 
         if (dateInput) {
@@ -156,215 +220,278 @@ document.addEventListener('DOMContentLoaded', () => {
             dateInput.min = today;
         }
 
-        form.addEventListener('submit', function(e) {
-
+        formReservation.addEventListener('submit', function(e) {
             e.preventDefault();
 
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const telefono = document.getElementById('telefono').value;
-            const persone = document.getElementById('persone').value;
+            const persone = document.getElementById('persone').value; 
             const data = document.getElementById('data').value;
             const orario = document.getElementById('orario').value;
             const note = document.getElementById('note').value;
 
-            const prenotazione = {
-                id: Date.now(),
-                nome,
-                email,
-                telefono,
-                persone,
-                data,
-                orario,
-                note,
-                dataCreazione: new Date().toLocaleString('it-IT')
-            };
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('email', email);
+            formData.append('telefono', telefono);
+            formData.append('data', data);
+            formData.append('ora', orario);      
+            formData.append('ospiti', persone);  
+            formData.append('note', note);
 
-            let prenotazioni =
-                JSON.parse(localStorage.getItem('prenotazioni')) || [];
+            fetch('backend/salva_prenotazione.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(risposta => {
+                if (risposta.trim() === "success") {
+                    const dataFormattata = new Date(data).toLocaleDateString('it-IT', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
 
-            prenotazioni.push(prenotazione);
+                    confirmationText.innerHTML = `
+                        Grazie <span class="text-oro-accento font-semibold">${nome}</span>!<br><br>
+                        La tua prenotazione per <span class="text-white font-semibold">${persone}</span> persone il
+                        <span class="text-white font-semibold">${dataFormattata}</span> alle ore
+                        <span class="text-white font-semibold">${orario}</span> è stata salvata direttamente nel Database.<br><br>
+                        Ti aspettiamo!
+                    `;
 
-            localStorage.setItem(
-                'prenotazioni',
-                JSON.stringify(prenotazioni)
-            );
-
-            const dataFormattata = new Date(data).toLocaleDateString('it-IT', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
+                    card.classList.add('hidden');
+                    successMessage.classList.remove('hidden');
+                    formReservation.reset();
+                } else {
+                    // Sostituito alert nativo con log per coerenza di stile
+                    console.log("Errore server prenotazione: " + risposta);
+                }
+            })
+            .catch(errore => {
+                console.error("Errore di connessione:", errore);
             });
-
-            confirmationText.innerHTML = `
-                Grazie <span class="text-oro-accento font-semibold">${nome}</span>!<br><br>
-                La tua prenotazione per
-                <span class="text-white font-semibold">${persone}</span>
-                persone il
-                <span class="text-white font-semibold">${dataFormattata}</span>
-                alle ore
-                <span class="text-white font-semibold">${orario}</span>
-                è stata registrata.<br><br>
-                Ti aspettiamo!
-            `;
-
-            card.classList.add('hidden');
-            successMessage.classList.remove('hidden');
         });
     }
 
-    // Gestione del Modal Feedback
+    // =====================================
+    // GESTIONE MODAL INTERATTIVO FEEDBACK
+    // =====================================
     const modalFeedback = document.getElementById('feedback-modal');
     const modalContent = document.getElementById('modal-content');
-    const btnApriFeedback = document.getElementById('btn-apri-feedback');
+    const btnApriFeedback = document.getElementById('btn-api-feedback') || document.getElementById('btn-apri-feedback');
     const btnChiudiFeedback = document.getElementById('btn-chiudi-feedback');
+    const formFeedback = modalFeedback ? modalFeedback.querySelector('form') : null;
+    const contenedorTarjetas = document.querySelector('section.py-20 .flex.gap-6.overflow-x-auto');
 
-    if (modalFeedback && btnApriFeedback) {
+    if (modalFeedback && btnApriFeedback && btnChiudiFeedback) {
         
-        // Funzione per aprire il modal
         btnApriFeedback.addEventListener('click', () => {
             modalFeedback.classList.remove('hidden');
             modalFeedback.classList.add('flex');
-            // Ritardo di 10ms per permettere al CSS di applicare l'opacità
             setTimeout(() => {
                 modalFeedback.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-                modalContent.classList.add('scale-100');
+                if(modalContent) {
+                    modalContent.classList.remove('scale-95');
+                    modalContent.classList.add('scale-100');
+                }
             }, 10);
-            document.body.classList.add('overflow-hidden'); // Blocca lo scroll del sito
+            document.body.classList.add('overflow-hidden');
         });
 
-        // Funzione per chiudere il modal
         const chiudiModal = () => {
             modalFeedback.classList.add('opacity-0');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-            
-            // Aspetta che l'animazione finisca (300ms) prima di nasconderlo del tutto
+            if(modalContent) {
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+            }
             setTimeout(() => {
                 modalFeedback.classList.add('hidden');
                 modalFeedback.classList.remove('flex');
-                document.body.classList.remove('overflow-hidden'); // Riattiva lo scroll
+                document.body.classList.remove('overflow-hidden');
             }, 300);
         };
 
         btnChiudiFeedback.addEventListener('click', chiudiModal);
 
-        // Chiudi se l'utente clicca fuori dalla finestra nera
         modalFeedback.addEventListener('click', (e) => {
-            if (e.target === modalFeedback) {
-                chiudiModal();
+            if (e.target === modalFeedback) chiudiModal();
+        });
+    }
+
+    // ==========================================
+    // RECENSIONI LOCALSTORAGE
+    // ==========================================
+    let comentariosGuardados = JSON.parse(localStorage.getItem('recensioni_steakhouse')) || [];
+
+    function mostrarComentariosGuardados() {
+        if (!contenedorTarjetas) return;
+        
+        comentariosGuardados.forEach(item => {
+            const nuevaTarjetaHTML = `
+                <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                    <div class="text-oro-accento flex mb-4">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                    </div>
+                    <p class="text-gray-400 text-sm font-light italic mb-6">"${item.messaggio}"</p>
+                    <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${item.email.split('@')[0]}</h4>
+                </div>
+            `;
+            contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
+        });
+    }
+
+    mostrarComentariosGuardados();
+
+    if (formFeedback) {
+        formFeedback.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const emailInput = document.getElementById('modal-email').value;
+            const messaggioInput = document.getElementById('modal-msg').value;
+
+            const nuevoFeedback = {
+                email: emailInput,
+                messaggio: messaggioInput
+            };
+
+            comentariosGuardados.unshift(nuevoFeedback);
+            localStorage.setItem('recensioni_steakhouse', JSON.stringify(comentariosGuardados));
+
+            const nuevaTarjetaHTML = `
+                <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                    <div class="text-oro-accento flex mb-4">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
+                    </div>
+                    <p class="text-gray-400 text-sm font-light italic mb-6">"${messaggioInput}"</p>
+                    <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${emailInput.split('@')[0]}</h4>
+                </div>
+            `;
+            
+            if (contenedorTarjetas) {
+                contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
+            }
+
+            formFeedback.reset();
+            if(btnChiudiFeedback) btnChiudiFeedback.click();
+        });
+    }
+
+    // Pulsante "Inizia l'Ordine" con scroll fluido
+    const btnInizioOrdine = document.getElementById('btn-inizio-ordine');
+    if (btnInizioOrdine) {
+        btnInizioOrdine.addEventListener('click', () => {
+            window.scrollBy({ top: 600, behavior: 'smooth' });
+        });
+    }
+
+    // Event Listener per aggiunta prodotti
+    const btnAddCarne = document.getElementById('btn-add-carne');
+    if (btnAddCarne) {
+        btnAddCarne.addEventListener('click', () => aggiungiProdotto('select-carne'));
+    }
+
+    const btnAddDrink = document.getElementById('btn-add-drink');
+    if (btnAddDrink) {
+        btnAddDrink.addEventListener('click', () => aggiungiProdotto('select-drink'));
+    }
+
+    const btnAddContorno = document.getElementById('btn-add-contorno');
+    if (btnAddContorno) {
+        btnAddContorno.addEventListener('click', () => aggiungiProdotto('select-contorno'));
+    }
+
+
+    // =====================================
+    // LOGICA UNIFICATA MODAL CHECKOUT
+    // =====================================
+    const checkoutModal = document.getElementById('checkout-modal');
+    const modalCorpo = document.getElementById('modal-corpo');
+    const btnApriCheckout = document.getElementById('btn-apri-checkout');
+    const btnChiudiModal = document.getElementById('btn-chiudi-modal');
+    const checkoutOverlay = document.getElementById('checkout-overlay');
+    const formCheckout = document.getElementById('form-checkout');
+
+    // Funzione per Aprire il Modal in modo elegante
+    if (btnApriCheckout) {
+        btnApriCheckout.addEventListener('click', () => {
+            const elementiCarrello = document.querySelectorAll('.carrello-elemento');
+            
+            // Se il carrello è vuoto, usciamo silenziosamente senza bloccare la pagina con alert
+            if (elementiCarrello.length === 0) {
+                return;
+            }
+            
+            if (checkoutModal && modalCorpo) {
+                checkoutModal.classList.remove('opacity-0', 'pointer-events-none');
+                modalCorpo.classList.remove('scale-95');
+                modalCorpo.classList.add('scale-100');
             }
         });
     }
 
-});
-
-
-
-
-// ==========================================
-// GESTIONE RECENSIONI E LOCALSTORAGE
-// ==========================================
-
-// 1. Selezioniamo gli elementi esatti dal tuo HTML
-const modalFeedback = document.getElementById('feedback-modal');
-const btnApriFeedback = document.getElementById('btn-apri-feedback');
-const btnChiudiFeedback = document.getElementById('btn-chiudi-feedback');
-const formFeedback = modalFeedback ? modalFeedback.querySelector('form') : null;
-
-// Selezioniamo il contenitore in cui scorrono le card dei clienti
-const contenedorTarjetas = document.querySelector('section.py-20 .flex.gap-6.overflow-x-auto');
-
-// 2. Recuperiamo le recensioni esistenti dal localStorage (se non ce ne sono, iniziamo con un array vuoto)
-let comentariosGuardados = JSON.parse(localStorage.getItem('recensioni_steakhouse')) || [];
-
-// 3. Funzione per mostrare le recensioni salvate all'apertura della pagina
-function mostrarComentariosGuardados() {
-    if (!contenedorTarjetas) return;
-    
-    comentariosGuardados.forEach(item => {
-        // Creiamo la card con la stessa struttura esatta del tuo HTML
-        const nuevaTarjetaHTML = `
-            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
-                <div class="text-oro-accento flex mb-4">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
-                </div>
-                <p class="text-gray-400 text-sm font-light italic mb-6">"${item.messaggio}"</p>
-                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${item.email.split('@')[0]}</h4>
-            </div>
-        `;
-        // Inseriamo la card all'inizio della lista così l'utente la vede subito
-        contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
-    });
-}
-
-// Eseguiamo la funzione al caricamento della pagina
-mostrarComentariosGuardados();
-
-// 4. Logica per aprire e chiudere il modal
-if (btnApriFeedback && modalFeedback) {
-    btnApriFeedback.addEventListener('click', () => {
-        modalFeedback.classList.remove('hidden');
-        modalFeedback.classList.add('flex');
-        setTimeout(() => modalFeedback.classList.remove('opacity-0'), 10);
-    });
-}
-
-if (btnChiudiFeedback && modalFeedback) {
-    btnChiudiFeedback.addEventListener('click', () => {
-        modalFeedback.classList.add('opacity-0');
-        setTimeout(() => {
-            modalFeedback.classList.remove('flex');
-            modalFeedback.classList.add('hidden');
-        }, 300);
-    });
-}
-
-// 5. Gestione dell'invio del form, salvataggio in localStorage e inserimento nella pagina
-if (formFeedback) {
-    formFeedback.addEventListener('submit', (e) => {
-        e.preventDefault(); // Impedisce il ricaricamento della pagina
-
-        // Recuperiamo i dati inseriti nei campi del form
-        const emailInput = document.getElementById('modal-email').value;
-        const messaggioInput = document.getElementById('modal-msg').value;
-
-        // Creiamo l'oggetto con la nuova recensione
-        const nuevoFeedback = {
-            email: emailInput,
-            messaggio: messaggioInput
-        };
-
-        // Aggiungiamo la nuova recensione all'inizio del nostro array
-        comentariosGuardados.unshift(nuevoFeedback);
-
-        // Salviamo l'array aggiornato nel localStorage come stringa di testo
-        localStorage.setItem('recensioni_steakhouse', JSON.stringify(comentariosGuardados));
-
-        // Creiamo e inseriamo immediatamente la nuova card nella pagina in modo dinamico
-        const nuevaTarjetaHTML = `
-            <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
-                <div class="text-oro-accento flex mb-4">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
-                </div>
-                <p class="text-gray-400 text-sm font-light italic mb-6">"${messaggioInput}"</p>
-                <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${emailInput.split('@')[0]}</h4>
-            </div>
-        `;
-        
-        if (contenedorTarjetas) {
-            contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
+    // Funzione per Chiudere il Modal
+    function chiudiCheckoutModal() {
+        if (checkoutModal && modalCorpo) {
+            checkoutModal.classList.add('opacity-0', 'pointer-events-none');
+            modalCorpo.classList.remove('scale-100');
+            modalCorpo.classList.add('scale-95');
         }
+    }
 
-        // Resettiamo i campi del form e chiudiamo la finestra modale
-        formFeedback.reset();
-        btnChiudiFeedback.click();
-    });
-}
+    if (btnChiudiModal) btnChiudiModal.addEventListener('click', chiudiCheckoutModal);
+    if (checkoutOverlay) checkoutOverlay.addEventListener('click', chiudiCheckoutModal);
+
+    // Gestione dell'invio dei dati tramite il form elegante
+    if (formCheckout) {
+        formCheckout.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('checkout-nome').value;
+            const telefono = document.getElementById('checkout-telefono').value;
+            const indirizzo = document.getElementById('checkout-indirizzo').value;
+            const note = document.getElementById('checkout-note').value;
+            
+            const totaleTesto = document.getElementById('label-totale').innerText;
+            const totaleNumero = parseFloat(totaleTesto.replace('€', '').trim());
+            
+            const elementiCarrello = document.querySelectorAll('.carrello-elemento');
+            let riepilogoProdotti = [];
+            elementiCarrello.forEach(item => {
+                const nomeProdotto = item.getAttribute('data-name');
+                const prezzoProdotto = item.getAttribute('data-price');
+                riepilogoProdotti.push(`${nomeProdotto} (€${prezzoProdotto})`);
+            });
+            const dettaglioCarrelloTesto = riepilogoProdotti.join(', ');
+
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('telefono', telefono);
+            formData.append('indirizzo', indirizzo);
+            formData.append('note', note);
+            formData.append('totale', totaleNumero);
+            formData.append('carrello', dettaglioCarrelloTesto);
+
+            fetch('backend/salva_ordine.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                chiudiCheckoutModal();
+                // Reindirizza alla schermata di successo in modo nativo e pulito
+                window.location.href = "ordini.html?status=success";
+            })
+            .catch(error => {
+                console.error("Errore durante l'invio:", error);
+            });
+        });
+    }
+
+});

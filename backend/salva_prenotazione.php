@@ -1,42 +1,52 @@
 <?php
-// Include la connessione al database appena creata
+// 1. Include db.php che è già connesso a 'steakhouse_db'
 require_once 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // 1. Recupera e pulisci i dati
+    // 2. Recupera e sanifica tutti i campi inviati da JavaScript
     $nome = htmlspecialchars(strip_tags(trim($_POST['nome'])));
+    $email = htmlspecialchars(strip_tags(trim($_POST['email'])));
+    $telefono = htmlspecialchars(strip_tags(trim($_POST['telefono'])));
     $data = htmlspecialchars(strip_tags(trim($_POST['data'])));
     $ora = htmlspecialchars(strip_tags(trim($_POST['ora'])));
     $ospiti = intval($_POST['ospiti']);
+    $note = isset($_POST['note']) ? htmlspecialchars(strip_tags(trim($_POST['note']))) : '';
 
-    // Valida i campi obbligatori
-    if (empty($nome) || empty($data) || empty($ora) || $ospiti <= 0) {
-        die("Errore: Compila tutti i campi correttamente.");
+    // Controlla che i campi obbligatori non siano vuoti
+    if (empty($nome) || empty($email) || empty($telefono) || empty($data) || empty($ora) || $ospiti <= 0) {
+        die("Errore: Compila tutti i campi obbligatori.");
     }
 
     try {
-        // 2. Prepara la query SQL con i segnaposto (?) per la sicurezza
-        $sql = "INSERT INTO prenotazioni (nome, data_prenotazione, ora_prenotazione, ospiti) VALUES (?, ?, ?, ?)";
+        // 3. Prepariamo la query usando i nomi esatti delle colonne della tua tabella
+        $sql = "INSERT INTO prenotazioni (nome, email, telefono, data_prenotazione, ora_prenotazione, ospiti, note) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
         $stmt = $pdo->prepare($sql);
         
-        // 3. Esegui la query passando i dati reali
-        $eseguito = $stmt->execute([$nome, $data, $ora, $ospiti]);
+        // 4. Eseguiamo il salvataggio iniettando i dati in sicurezza
+        $eseguito = $stmt->execute([
+            $nome, 
+            $email, 
+            $telefono, 
+            $data, 
+            $ora, 
+            $ospiti, 
+            $note
+        ]);
 
         if ($eseguito) {
-            // Reindirizza l'utente alla pagina iniziale con lo stato di successo
-            header("Location: ../prenotazioni.html?status=success");
+            // Risposta testuale pulita letta dal fetch di main.js per attivare la card di successo
+            echo "success";
             exit;
         } else {
-            echo "Si è verificato un errore durante il salvataggio dei dati.";
+            echo "Errore durante l'inserimento dei dati.";
         }
 
     } catch (\PDOException $e) {
-        // In produzione è meglio non mostrare l'errore crudo ($e->getMessage()) per sicurezza
         echo "Errore del database: " . $e->getMessage();
     }
-
 } else {
-    header("Location: ../index.html");
-    exit;
+    echo "Metodo non consentito.";
 }
