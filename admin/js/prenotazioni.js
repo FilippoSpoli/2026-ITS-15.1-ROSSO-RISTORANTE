@@ -3,6 +3,65 @@ $(document).ready(function () {
 
     caricaPrenotazioni();
 
+    // Listener per Seleziona/Deseleziona tutte le checkbox
+    $(document).on("change", "#seleziona-tutti-prenotazioni", function() {
+        $(".cb-prenotazione").prop("checked", this.checked);
+    });
+
+    // Applicazione Azione Massiva
+    $("#btnApplicaBulkPrenotazioni").on("click", function() {
+        const azione = $("#bulk-action-prenotazioni").val();
+        if (!azione) {
+            Swal.fire('Attenzione', 'Seleziona un\'azione di gruppo', 'warning');
+            return;
+        }
+
+        const selezionati = $(".cb-prenotazione:checked").map(function() {
+            return $(this).val();
+        }).get();
+
+        if (selezionati.length === 0) {
+            Swal.fire('Attenzione', 'Nessuna prenotazione selezionata', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Confermi l\'azione di gruppo?',
+            text: `Stai per modificare ${selezionati.length} prenotazioni contemporaneamente.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sì, procedi',
+            cancelButtonText: 'Annulla',
+            background: '#141414',
+            color: '#fff'
+        }).then(async (result) => {
+            if (!result.isConfirmed) return;
+
+            const formData = new FormData();
+            formData.append('ids', JSON.stringify(selezionati));
+            formData.append('type', azione);
+
+            try {
+                const response = await fetch(`${CONTROLLER_PRENOTAZIONI}?action=bulk`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const risultato = await response.json();
+
+                if (risultato.status === 'success') {
+                    Swal.fire({ title: 'Fatto!', text: risultato.message, icon: 'success', background: '#141414', color: '#fff' });
+                    caricaPrenotazioni();
+                } else {
+                    Swal.fire('Errore', risultato.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Errore', 'Connessione al server fallita.', 'error');
+            }
+        });
+    });
+
     $("#btnSvuota").on("click", async function () {
         if (confirm("Vuoi eliminare TUTTE le prenotazioni dal database?")) {
             try {
@@ -24,6 +83,7 @@ $(document).ready(function () {
         if (!tbody.length) return;
         
         tbody.empty();
+        $("#seleziona-tutti-prenotazioni").prop("checked", false);
 
         try {
             const response = await fetch(`${CONTROLLER_PRENOTAZIONI}?action=index`);
@@ -34,7 +94,7 @@ $(document).ready(function () {
             if (prenotazioni.length === 0) {
                 tbody.append(`
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-4">
+                        <td colspan="10" class="text-center text-muted py-4">
                             Nessuna prenotazione trovata nel database
                         </td>
                     </tr>
@@ -43,7 +103,6 @@ $(document).ready(function () {
             }
 
             prenotazioni.forEach(prenotazione => {
-                // Determiniamo dinamicamente l'azione se il record è stato archiviato (soft delete)
                 let colonnaAzione = '';
                 if (prenotazione.deleted_at) {
                     colonnaAzione = `
@@ -61,6 +120,9 @@ $(document).ready(function () {
 
                 tbody.append(`
                     <tr>
+                        <td class="text-center align-middle">
+                            <input type="checkbox" class="cb-prenotazione" value="${prenotazione.id}">
+                        </td>
                         <td>${prenotazione.id}</td>
                         <td>${prenotazione.nome}</td>
                         <td>${prenotazione.email}</td>
@@ -74,7 +136,6 @@ $(document).ready(function () {
                 `);
             });
 
-            // Gestione dei click sui pulsanti generati nella tabella
             $(".btn-elimina").off("click").on("click", function() {
                 const id = $(this).data("id");
                 eliminaPrenotazione(id);
@@ -87,7 +148,7 @@ $(document).ready(function () {
 
         } catch (error) {
             console.error("Errore:", error);
-            tbody.append(`<tr><td colspan="9" class="text-center text-danger py-4">Errore di caricamento dati.</td></tr>`);
+            tbody.append(`<tr><td colspan="10" class="text-center text-danger py-4">Errore di caricamento dati.</td></tr>`);
         }
     }
 
@@ -129,13 +190,7 @@ $(document).ready(function () {
                 const risultato = await response.json();
 
                 if (risultato.status === 'success') {
-                    Swal.fire({
-                        title: 'Operazione completata!',
-                        text: risultato.message,
-                        icon: 'success',
-                        background: '#141414',
-                        color: '#fff'
-                    });
+                    Swal.fire({ title: 'Operazione completata!', text: risultato.message, icon: 'success', background: '#141414', color: '#fff' });
                     caricaPrenotazioni();
                 } else {
                     Swal.fire('Errore', risultato.message, 'error');
@@ -158,13 +213,7 @@ $(document).ready(function () {
             const risultato = await response.json();
 
             if (risultato.status === 'success') {
-                Swal.fire({
-                    title: 'Ripristinata!',
-                    text: risultato.message,
-                    icon: 'success',
-                    background: '#141414',
-                    color: '#fff'
-                });
+                Swal.fire({ title: 'Ripristinata!', text: risultato.message, icon: 'success', background: '#141414', color: '#fff' });
                 caricaPrenotazioni();
             } else {
                 Swal.fire('Errore', risultato.message, 'error');

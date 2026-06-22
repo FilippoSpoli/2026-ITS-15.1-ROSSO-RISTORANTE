@@ -47,6 +47,33 @@ try {
             echo json_encode(['status' => 'success', 'message' => 'Record ripristinato con successo nell\'elenco principale']);
             break;
 
+            case 'bulk':
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    throw new Exception('Metodo non consentito');
+                }
+                
+                $ids = json_decode($_POST['ids'] ?? '[]', true);
+                $type = $_POST['type'] ?? ''; 
+
+                if (empty($ids) || !is_array($ids)) {
+                    throw new Exception('Nessuna prenotazione selezionata');
+                }
+
+                $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+                if ($type === 'soft_delete') {
+                    $stmt = $pdo->prepare("UPDATE prenotazioni SET deleted_at = NOW() WHERE id IN ($placeholders)");
+                    $stmt->execute($ids);
+                    echo json_encode(['status' => 'success', 'message' => 'Prenotazioni selezionate archiviate con successo']);
+                } elseif ($type === 'restore') {
+                    $stmt = $pdo->prepare("UPDATE prenotazioni SET deleted_at = NULL WHERE id IN ($placeholders)");
+                    $stmt->execute($ids);
+                    echo json_encode(['status' => 'success', 'message' => 'Prenotazioni selezionate ripristinate con successo']);
+                } else {
+                    throw new Exception('Azione di massa non valida');
+                }
+                break;
+
         case 'svuota':
             if ($method !== 'POST') { throw new Exception('Metodo non consentito'); }
             $pdo->query("TRUNCATE TABLE prenotazioni");

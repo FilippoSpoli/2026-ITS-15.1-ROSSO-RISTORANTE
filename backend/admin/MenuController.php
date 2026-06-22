@@ -83,6 +83,37 @@ try {
             echo json_encode(['status' => 'success', 'message' => 'Record ripristinato con successo nell\'elenco principale']);
             break;
 
+            case 'bulk':
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    throw new Exception('Metodo non consentito');
+                }
+                
+                // Decodifichiamo l'array di ID inviati dal Javascript
+                $ids = json_decode($_POST['ids'] ?? '[]', true);
+                $type = $_POST['type'] ?? ''; // Riceve 'soft_delete' o 'restore'
+
+                if (empty($ids) || !is_array($ids)) {
+                    throw new Exception('Nessun record selezionato o formato non valido');
+                }
+
+                // Generiamo i punti di domanda per la query IN es. (?, ?, ?)
+                $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+                if ($type === 'soft_delete') {
+                    // Soft delete di massa: imposta la data corrente
+                    $stmt = $pdo->prepare("UPDATE menu SET deleted_at = NOW() WHERE id IN ($placeholders)");
+                    $stmt->execute($ids);
+                    echo json_encode(['status' => 'success', 'message' => 'Piatti selezionati archiviati con successo']);
+                } elseif ($type === 'restore') {
+                    // Ripristino di massa: azzera la colonna deleted_at
+                    $stmt = $pdo->prepare("UPDATE menu SET deleted_at = NULL WHERE id IN ($placeholders)");
+                    $stmt->execute($ids);
+                    echo json_encode(['status' => 'success', 'message' => 'Piatti selezionati ripristinati con successo']);
+                } else {
+                    throw new Exception('Azione di massa non valida');
+                }
+                break;
+
         default:
             throw new Exception('Azione non riconosciuta o non configurata');
     }
