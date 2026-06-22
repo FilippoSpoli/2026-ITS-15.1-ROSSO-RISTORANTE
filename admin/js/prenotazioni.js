@@ -1,5 +1,6 @@
 $(document).ready(function () {
     const CONTROLLER_PRENOTAZIONI = '../backend/admin/PrenotazioniController.php';
+    let elencoPrenotazioni = []; // Array globale per salvare lo stato locale delle prenotazioni
 
     caricaPrenotazioni();
 
@@ -89,9 +90,9 @@ $(document).ready(function () {
             const response = await fetch(`${CONTROLLER_PRENOTAZIONI}?action=index`);
             if (!response.ok) throw new Error("Errore nel recupero dati");
             
-            const prenotazioni = await response.json();
+            elencoPrenotazioni = await response.json();
 
-            if (prenotazioni.length === 0) {
+            if (elencoPrenotazioni.length === 0) {
                 tbody.append(`
                     <tr>
                         <td colspan="10" class="text-center text-muted py-4">
@@ -102,16 +103,16 @@ $(document).ready(function () {
                 return;
             }
 
-            prenotazioni.forEach(prenotazione => {
-                let colonnaAzione = '';
+            elencoPrenotazioni.forEach(prenotazione => {
+                let bottoneCancellazioneORipristino = '';
                 if (prenotazione.deleted_at) {
-                    colonnaAzione = `
+                    bottoneCancellazioneORipristino = `
                         <button class="btn btn-success btn-sm btn-ripristina" data-id="${prenotazione.id}" title="Ripristina">
                             <i class="fas fa-undo"></i>
                         </button>
                     `;
                 } else {
-                    colonnaAzione = `
+                    bottoneCancellazioneORipristino = `
                         <button class="btn btn-danger btn-sm btn-elimina" data-id="${prenotazione.id}" title="Elimina">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -131,9 +132,22 @@ $(document).ready(function () {
                         <td>${prenotazione.data_prenotazione}</td>
                         <td>${prenotazione.ora_prenotazione}</td>
                         <td>${prenotazione.note || '-'}</td>
-                        <td>${colonnaAzione}</td>
+                        <td class="align-middle text-center">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-info btn-sm mr-1 btn-visualizza" data-id="${prenotazione.id}" title="Visualizza dettagli">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${bottoneCancellazioneORipristino}
+                            </div>
+                        </td>
                     </tr>
                 `);
+            });
+
+            // Gestione dei click sui pulsanti generati nella tabella
+            $(".btn-visualizza").off("click").on("click", function() {
+                const id = $(this).data("id");
+                mostraDettagliPrenotazione(id);
             });
 
             $(".btn-elimina").off("click").on("click", function() {
@@ -150,6 +164,22 @@ $(document).ready(function () {
             console.error("Errore:", error);
             tbody.append(`<tr><td colspan="10" class="text-center text-danger py-4">Errore di caricamento dati.</td></tr>`);
         }
+    }
+
+    // Funzione per mostrare il Modal dei dettagli della prenotazione
+    function mostraDettagliPrenotazione(id) {
+        const prenotazione = elencoPrenotazioni.find(p => p.id == id);
+        if (!prenotazione) return;
+
+        $("#info-p-id").text("#" + prenotazione.id);
+        $("#info-p-nome").text(prenotazione.nome);
+        $("#info-p-email").text(prenotazione.email);
+        $("#info-p-telefono").text(prenotazione.telefono || 'Non fornito');
+        $("#info-p-persone").html(`<span class="badge bg-secondary px-2 py-1">${prenotazione.persone} Persone</span>`);
+        $("#info-p-quando").text(`${prenotazione.data_prenotazione} alle ore ${prenotazione.ora_prenotazione}`);
+        $("#info-p-note").text(prenotazione.note ? `"${prenotazione.note}"` : 'Nessuna nota aggiuntiva');
+
+        $('#modalInfoPrenotazione').modal('show');
     }
 
     async function eliminaPrenotazione(id) {
