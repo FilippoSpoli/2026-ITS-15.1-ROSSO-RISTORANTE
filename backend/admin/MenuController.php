@@ -56,13 +56,31 @@ try {
         case 'destroy':
             if ($method !== 'POST') { throw new Exception('Metodo non consentito'); }
             $id = intval($_POST['id'] ?? 0);
+            $type = $_POST['type'] ?? 'soft'; // Recupera il tipo (soft o hard)
 
             if ($id <= 0) { throw new Exception('ID non valido'); }
 
-            $stmt = $pdo->prepare("DELETE FROM menu WHERE id = ?");
-            $stmt->execute([$id]);
+            if ($type === 'hard') {
+                $stmt = $pdo->prepare("DELETE FROM menu WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['status' => 'success', 'message' => 'Piatto eliminato definitivamente dal database']);
+            } else {
+                $stmt = $pdo->prepare("UPDATE menu SET deleted_at = NOW() WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['status' => 'success', 'message' => 'Piatto archiviato con successo (Soft Delete)']);
+            }
+            break;
 
-            echo json_encode(['status' => 'success', 'message' => 'Piatto rimosso con successo']);
+        case 'restore':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { throw new Exception('Metodo non consentito'); }
+            $id = intval($_POST['id'] ?? 0);
+            if ($id <= 0) { throw new Exception('ID non valido'); }
+
+            // Ripristino: impostiamo la colonna deleted_at nuovamente a NULL
+            $stmt = $pdo->prepare("UPDATE menu SET deleted_at = NULL WHERE id = ?");
+            
+            $stmt->execute([$id]);
+            echo json_encode(['status' => 'success', 'message' => 'Record ripristinato con successo nell\'elenco principale']);
             break;
 
         default:

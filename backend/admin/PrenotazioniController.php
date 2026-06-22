@@ -20,12 +20,31 @@ try {
         case 'destroy':
             if ($method !== 'POST') { throw new Exception('Metodo non consentito'); }
             $id = intval($_POST['id'] ?? 0);
+            $type = $_POST['type'] ?? 'soft';
+
             if ($id <= 0) { throw new Exception('ID non valido'); }
 
-            $stmt = $pdo->prepare("DELETE FROM prenotazioni WHERE id = ?");
-            $stmt->execute([$id]);
+            if ($type === 'hard') {
+                $stmt = $pdo->prepare("DELETE FROM prenotazioni WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['status' => 'success', 'message' => 'Prenotazione rimossa permanentemente']);
+            } else {
+                $stmt = $pdo->prepare("UPDATE prenotazioni SET deleted_at = NOW() WHERE id = ?");
+                $stmt->execute([$id]);
+                echo json_encode(['status' => 'success', 'message' => 'Prenotazione spostata in archivio (Soft Delete)']);
+            }
+            break;
 
-            echo json_encode(['status' => 'success', 'message' => 'Prenotazione eliminata']);
+        case 'restore':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { throw new Exception('Metodo non consentito'); }
+            $id = intval($_POST['id'] ?? 0);
+            if ($id <= 0) { throw new Exception('ID non valido'); }
+
+            // Ripristino: impostiamo la colonna deleted_at nuovamente a NULL
+            $stmt = $pdo->prepare("UPDATE prenotazioni SET deleted_at = NULL WHERE id = ?");
+            
+            $stmt->execute([$id]);
+            echo json_encode(['status' => 'success', 'message' => 'Record ripristinato con successo nell\'elenco principale']);
             break;
 
         case 'svuota':

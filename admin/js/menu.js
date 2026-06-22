@@ -20,9 +20,30 @@ function renderTabellaMenu() {
 
     piattiMenu.forEach(piatto => {
         const fotoSrc = piatto.foto ? piatto.foto : 'https://placehold.co/100x100/141414/C5A059?text=Steak';
-        const badge = parseInt(piatto.disponibile) === 1 
+        
+        // Determiniamo il badge di stato principale
+        let badge = parseInt(piatto.disponibile) === 1 
             ? '<span class="badge badge-success">Attivo</span>' 
             : '<span class="badge badge-secondary">Sospeso</span>';
+
+        // Variabile per il tasto Azione distruttiva/ripristino
+        let bottoneCancellazioneORipristino = '';
+
+        // Controlliamo se il record è stato archiviato (soft-deleted)
+        if (piatto.deleted_at) {
+            badge = '<span class="badge badge-danger">Archiviato</span>';
+            bottoneCancellazioneORipristino = `
+                <button class="btn btn-success btn-sm" onclick="ripristinaPiatto(${piatto.id})" title="Ripristina Piatto">
+                    <i class="fas fa-undo"></i>
+                </button>
+            `;
+        } else {
+            bottoneCancellazioneORipristino = `
+                <button class="btn btn-danger btn-sm" onclick="eliminaPiatto(${piatto.id})" title="Elimina">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+        }
 
         tbody.innerHTML += `
             <tr>
@@ -37,17 +58,44 @@ function renderTabellaMenu() {
                             <i class="fas fa-eye"></i>
                         </button>
                         <button class="btn btn-warning btn-sm mr-1" onclick="apriModalPiatto(${piatto.id})" title="Modifica">
-                            <i class="fas fa-pencil-alt"></i>
+                            <i class="fas fa-pencil-alt text-dark"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminaPiatto(${piatto.id})" title="Elimina">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        ${bottoneCancellazioneORipristino}
                     </div>
                 </td>
             </tr>
         `;
     });
 }
+
+// NUOVA: Funzione AJAX per il ripristino del piatto
+window.ripristinaPiatto = async function(id) {
+    const formData = new FormData();
+    formData.append('id', id);
+
+    try {
+        const response = await fetch(`${CONTROLLER_URL}?action=restore`, {
+            method: 'POST',
+            body: formData
+        });
+        const risultato = await response.json();
+
+        if (risultato.status === 'success') {
+            Swal.fire({
+                title: 'Ripristinato!',
+                text: risultato.message,
+                icon: 'success',
+                background: '#141414',
+                color: '#fff'
+            });
+            caricaPiattiMenu();
+        } else {
+            Swal.fire('Errore', risultato.message, 'error');
+        }
+    } catch (error) {
+        Swal.fire('Errore', "Impossibile connettersi al server.", 'error');
+    }
+};
 
 // Funzione globale per mostrare il modal informativo dei dettagli
 window.mostraDettagliPiatto = function(id) {
@@ -123,27 +171,59 @@ window.salvaPiattoModificato = async function(e) {
     }
 };
 
-window.eliminaPiatto = async function(id) {
-    if (!confirm("Sei sicuro di voler eliminare questo piatto dal database?")) return;
-
-    const formData = new FormData();
-    formData.append('id', id);
-
-    try {
-        const response = await fetch(`${CONTROLLER_URL}?action=destroy`, {
-            method: 'POST',
-            body: formData
-        });
-        const risultato = await response.json();
-
-        if (risultato.status === 'success') {
-            caricaPiattiMenu();
+window.eliminaPiatto = function(id) {
+    Swal.fire({
+        title: 'Come vuoi eliminare questo piatto?',
+        text: "Scegli se archiviarlo temporaneamente (Soft) o rimuoverlo per sempre (Definitivo).",
+        icon: 'warning',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonColor: '#3085d6',
+        denyButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="fas fa-archive"></i> Soft Delete (Archivia)',
+        denyButtonText: '<i class="fas fa-trash-alt"></i> Delete Definitivo',
+        cancelButtonText: 'Annulla',
+        background: '#141414',
+        color: '#fff'
+    }).then(async (result) => {
+        let tipoEliminazione = '';
+        
+        if (result.isConfirmed) {
+            tipoEliminazione = 'soft';
+        } else if (result.isDenied) {
+            tipoEliminazione = 'hard';
         } else {
-            alert(risultato.message);
+            return; // Annullato
         }
-    } catch (error) {
-        alert("Errore durante l'eliminazione.");
-    }
+
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('type', tipoEliminazione);
+
+        try {
+            const response = await fetch(`${CONTROLLER_URL}?action=destroy`, {
+                method: 'POST',
+                body: formData
+            });
+            const risultato = await response.json();
+
+            if (risultato.status === 'success') {
+                Swal.fire({
+                    title: 'Eliminato!',
+                    text: risultato.message,
+                    icon: 'success',
+                    background: '#141414',
+                    color: '#fff'
+                });
+                caricaPiattiMenu();
+            } else {
+                Swal.fire('Errore', risultato.message, 'error');
+            }
+        } catch (error) {
+            Swal.fire('Errore', "Impossibile connettersi al server.", 'error');
+        }
+    });
 };
 
 // Avvio automatico al caricamento della pagina del menù
