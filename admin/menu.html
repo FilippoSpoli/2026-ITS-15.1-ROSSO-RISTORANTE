@@ -118,6 +118,47 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modalInfoPiatto" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content card border border-secondary text-white">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-bold"><i
+                                class="fas fa-info-circle mr-2 text-info"></i>Dettagli Piatto</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="info-foto" src="" class="img-fluid rounded mb-3 border"
+                            style="max-height: 180px; width: 180px; object-fit: cover; border-color: #2d3748 !important;">
+
+                        <table class="table table-sm table-borderless text-left mt-2">
+                            <tr>
+                                <td class="font-weight-bold text-muted" style="width: 35%;">Nome:</td>
+                                <td id="info-nome" class="font-weight-bold text-white"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-muted">Categoria:</td>
+                                <td id="info-categoria" class="text-white"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-muted">Prezzo:</td>
+                                <td id="info-prezzo" class="text-success font-weight-bold"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-weight-bold text-muted">Stato:</td>
+                                <td id="info-stato"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Chiudi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -32,13 +32,40 @@ function renderTabellaMenu() {
                 <td class="align-middle text-success font-weight-bold">${window.formattaEuro(piatto.prezzo)}</td>
                 <td class="align-middle text-center">${badge}</td>
                 <td class="align-middle text-right">
-                    <button class="btn btn-sm btn-info mr-1" onclick="apriModalModifica(${piatto.id})"><i class="fas fa-pencil-alt"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="eliminaPiatto(${piatto.id})"><i class="fas fa-trash"></i></button>
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-info btn-sm mr-1" onclick="mostraDettagliPiatto(${piatto.id})" title="Visualizza dettagli">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-warning btn-sm mr-1" onclick="apriModalPiatto(${piatto.id})" title="Modifica">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminaPiatto(${piatto.id})" title="Elimina">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
     });
 }
+
+// Funzione globale per mostrare il modal informativo dei dettagli
+window.mostraDettagliPiatto = function(id) {
+    const piatto = piattiMenu.find(p => p.id === id);
+    if (!piatto) return;
+
+    document.getElementById('info-nome').innerText = piatto.nome;
+    document.getElementById('info-categoria').innerText = piatto.categoria;
+    document.getElementById('info-prezzo').innerText = window.formattaEuro(piatto.prezzo);
+    document.getElementById('info-stato').innerHTML = parseInt(piatto.disponibile) === 1 
+        ? '<span class="badge badge-success">Attivo / Disponibile</span>' 
+        : '<span class="badge badge-secondary">Sospeso / Non disponibile</span>';
+    
+    const infoFoto = document.getElementById('info-foto');
+    infoFoto.src = piatto.foto ? piatto.foto : 'https://placehold.co/150x150/141414/C5A059?text=Steak';
+
+    $('#modalInfoPiatto').modal('show');
+};
 
 // Modali e interazioni di inserimento/modifica
 window.apriModalNuovo = function() {
