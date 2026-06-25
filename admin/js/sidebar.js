@@ -9,10 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const paginePersonale = ["cedolini.html", "ferie-permessi.html", "malattia.html"];
     const isPersonaleOpen = paginePersonale.includes(paginaCorrente);
 
-    // NOTA: Rimosso data-widget="treeview" dalla radice della lista per evitare conflitti con AdminLTE
+    // Generazione dinamica della sidebar strutturata con Flexbox per spingere il bottone in basso
     const sidebarHTML = `
-        <nav class="mt-3">
-            <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" role="menu" data-accordion="false">
+        <nav class="mt-3" style="height: calc(100vh - 70px); display: flex; flex-direction: column;">
+            <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" role="menu" data-accordion="false" style="flex: 1;">
                 
                 <li class="nav-item">
                     <a href="dashboard.html" class="nav-link ${paginaCorrente === 'dashboard.html' ? 'active' : ''}">
@@ -64,15 +64,23 @@ document.addEventListener("DOMContentLoaded", function () {
                         </li>
                     </ul>
                 </li>
+            </ul>
 
+            <ul class="nav nav-pills nav-sidebar flex-column mt-auto mb-3">
+                <li class="nav-item border-top border-secondary pt-3">
+                    <a href="../index.html" class="nav-link bg-danger text-white mx-1" style="opacity: 0.95; display: block !important;">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p class="font-weight-bold" style="display: inline-block; margin-bottom: 0;">Esci (Client)</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     `;
 
-    // Inietta l'HTML nella sidebar
+    // Inietta l'HTML completo nella sidebar
     sidebarContainer.innerHTML = sidebarHTML;
 
-    // Gestione manuale e stabile del collassamento tramite jQuery
+    // Gestione manuale e stabile del collassamento della tendina tramite jQuery
     if (window.$) {
         $(".nav-link-padre-custom").on("click", function (e) {
             e.preventDefault();
@@ -81,12 +89,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const $subMenu = $parentLi.find(".sub-menu-custom");
 
             if ($parentLi.hasClass("menu-open")) {
-                // Se è aperto, lo chiudiamo con un'animazione fluida
                 $subMenu.slideUp(250, function () {
                     $parentLi.removeClass("menu-open");
                 });
             } else {
-                // Se è chiuso, lo apriamo
                 $parentLi.addClass("menu-open");
                 $subMenu.slideDown(250);
             }

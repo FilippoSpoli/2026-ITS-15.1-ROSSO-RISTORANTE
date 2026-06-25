@@ -136,3 +136,16 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
     color: #ffffff !important;
 }
+
+/* Rimuove lo spazio vuoto grigio scuro sopra la fascia del titolo */
+.content-wrapper {
+    padding-top: 0px !important;
+}
+
+/* Compatta e stacca l'intestazione della pagina */
+.content-header {
+    padding-top: 12px !important;    /* Un minimo di respiro interno alla fascia bianca */
+    padding-bottom: 12px;
+    border-bottom: 1px solid #4f5962; /* Linea sottile di divisione */
+    margin-bottom: 20px;             /* Spinge giù il contenuto della pagina */
+}
