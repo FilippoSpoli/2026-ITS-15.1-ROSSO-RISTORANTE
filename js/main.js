@@ -69,7 +69,6 @@ window.rimuoviProdotto = function(itemId) {
     if (item) {
         item.remove();
         
-        // Se non ci sono più elementi nel carrello, mostra di nuovo il testo vuoto
         const elementiRimasti = document.querySelectorAll('.carrello-elemento');
         if (elementiRimasti.length === 0) {
             const msgVuoto = document.getElementById('carrello-vuoto');
@@ -105,7 +104,7 @@ function calcolaTotale() {
 
 
 // =====================================
-// INIZIALIZZAZIONE DOM
+// INIZIALIZZAZIONE DOM CENTRALIZZATA
 // =====================================
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -265,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     successMessage.classList.remove('hidden');
                     formReservation.reset();
                 } else {
-                    // Sostituito alert nativo con log per coerenza di stile
                     console.log("Errore server prenotazione: " + risposta);
                 }
             })
@@ -282,8 +280,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalContent = document.getElementById('modal-content');
     const btnApriFeedback = document.getElementById('btn-api-feedback') || document.getElementById('btn-apri-feedback');
     const btnChiudiFeedback = document.getElementById('btn-chiudi-feedback');
-    const formFeedback = modalFeedback ? modalFeedback.querySelector('form') : null;
-    const contenedorTarjetas = document.querySelector('section.py-20 .flex.gap-6.overflow-x-auto');
+    const formFeedback = document.getElementById("form-feedback");
+    const containerRecensioni = document.getElementById("recensioni-container") || document.querySelector(".flex.gap-6.overflow-x-auto.snap-x");
 
     if (modalFeedback && btnApriFeedback && btnChiudiFeedback) {
         
@@ -321,66 +319,108 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // RECENSIONI LOCALSTORAGE
+    // UNICA FUNZIONE CARICAMENTO RECENSIONI REALI
     // ==========================================
-    let comentariosGuardados = JSON.parse(localStorage.getItem('recensioni_steakhouse')) || [];
+    function mostraRecensioniSalvate() {
+        if (!containerRecensioni) return;
 
-    function mostrarComentariosGuardados() {
-        if (!contenedorTarjetas) return;
-        
-        comentariosGuardados.forEach(item => {
-            const nuevaTarjetaHTML = `
-                <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
-                    <div class="text-oro-accento flex mb-4">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
-                    </div>
-                    <p class="text-gray-400 text-sm font-light italic mb-6">"${item.messaggio}"</p>
-                    <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${item.email.split('@')[0]}</h4>
-                </div>
-            `;
-            contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
-        });
+        // Svuota immediatamente le recensioni fisse inserite nell'HTML statico
+        containerRecensioni.innerHTML = "";
+
+        fetch('backend/leggi_feedback.php')
+            .then(response => {
+                if (!response.ok) throw new Error("Errore nel caricamento delle recensioni");
+                return response.json();
+            })
+            .then(recensioni => {
+                if (!recensioni || recensioni.length === 0) {
+                    containerRecensioni.innerHTML = `
+                        <p class="text-gray-500 text-sm italic text-center w-full py-8">
+                            Nessuna recensione presente. Sii il primo a lasciarne una!
+                        </p>`;
+                    return;
+                }
+
+                // Cicla ed appende i record estratti dal DB
+                recensioni.forEach(item => {
+                    const nome = item.nome || 'Anonimo';
+                    const cognome = item.cognome || '';
+                    
+                    // Unisce Nome e Cognome per la stampa sul Front-end
+                    const autoreCompleto = cognome ? `${nome} ${cognome}` : nome;
+                    
+                    const commento = item.commento || '';
+                    const voto = parseInt(item.valutazione) || 5;
+
+                    let stelleHTML = '';
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= voto) {
+                            stelleHTML += `<svg class="w-4 h-4 text-oro-accento" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+                        } else {
+                            stelleHTML += `<svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`;
+                        }
+                    }
+
+                    const cardHTML = `
+                        <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
+                            <div class="flex items-center space-x-1 mb-4">
+                                <div class="flex text-oro-accento">${stelleHTML}</div>
+                                <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-0.5">${voto.toFixed(1)}</span>
+                            </div>
+                            <p class="text-gray-400 text-sm font-light italic mb-6">"${commento}"</p>
+                            <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${autoreCompleto}</h4>
+                        </div>
+                    `;
+                    containerRecensioni.insertAdjacentHTML('beforeend', cardHTML);
+                });
+            })
+            .catch(error => {
+                console.error("Errore durante il caricamento dei feedback:", error);
+                containerRecensioni.innerHTML = `<p class="text-red-500 text-sm italic text-center w-full py-4">Impossibile caricare le recensioni.</p>`;
+            });
     }
 
-    mostrarComentariosGuardados();
+    // Caricamento iniziale immediato
+    mostraRecensioniSalvate();
 
+    // ==========================================
+    // INVIO DEL FORM FEEDBACK (Modello salva_ordine)
+    // ==========================================
     if (formFeedback) {
         formFeedback.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const emailInput = document.getElementById('modal-email').value;
+            const nomeInput = document.getElementById('modal-nome').value;
+            const cognomeInput = document.getElementById('modal-cognome').value; // Recupera il cognome
+            const valutazioneInput = document.getElementById('modal-valutazione').value;
             const messaggioInput = document.getElementById('modal-msg').value;
 
-            const nuevoFeedback = {
-                email: emailInput,
-                messaggio: messaggioInput
-            };
+            const formData = new FormData();
+            formData.append('nome', nomeInput);
+            formData.append('cognome', cognomeInput); // Aggiunge il cognome ai dati inviati
+            formData.append('valutazione', valutazioneInput);
+            formData.append('commento', messaggioInput);
 
-            comentariosGuardados.unshift(nuevoFeedback);
-            localStorage.setItem('recensioni_steakhouse', JSON.stringify(comentariosGuardados));
+            fetch('backend/salva_feedback.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.trim() === "success") {
+                    formFeedback.reset();
+                    if (btnChiudiFeedback) btnChiudiFeedback.click();
 
-            const nuevaTarjetaHTML = `
-                <div class="snap-center shrink-0 w-80 bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-xl relative">
-                    <div class="text-oro-accento flex mb-4">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span class="text-xs ml-2 font-bold uppercase tracking-widest text-white mt-1">5.0</span>
-                    </div>
-                    <p class="text-gray-400 text-sm font-light italic mb-6">"${messaggioInput}"</p>
-                    <h4 class="text-white text-xs font-bold uppercase tracking-widest">- ${emailInput.split('@')[0]}</h4>
-                </div>
-            `;
-            
-            if (contenedorTarjetas) {
-                contenedorTarjetas.insertAdjacentHTML('afterbegin', nuevaTarjetaHTML);
-            }
-
-            formFeedback.reset();
-            if(btnChiudiFeedback) btnChiudiFeedback.click();
+                    // Aggiorna istantaneamente l'interfaccia prelevando i dati salvati a DB
+                    mostraRecensioniSalvate();
+                } else {
+                    alert("Errore durante il salvataggio: " + data);
+                }
+            })
+            .catch(error => {
+                console.error("Errore durante l'invio:", error);
+                alert("Si è verificato un errore di rete.");
+            });
         });
     }
 
@@ -410,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // =====================================
-    // LOGICA UNIFICATA MODAL CHECKOUT
+    // LOGICA MODAL CHECKOUT
     // =====================================
     const checkoutModal = document.getElementById('checkout-modal');
     const modalCorpo = document.getElementById('modal-corpo');
@@ -419,15 +459,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutOverlay = document.getElementById('checkout-overlay');
     const formCheckout = document.getElementById('form-checkout');
 
-    // Funzione per Aprire il Modal in modo elegante
     if (btnApriCheckout) {
         btnApriCheckout.addEventListener('click', () => {
             const elementiCarrello = document.querySelectorAll('.carrello-elemento');
-            
-            // Se il carrello è vuoto, usciamo silenziosamente senza bloccare la pagina con alert
-            if (elementiCarrello.length === 0) {
-                return;
-            }
+            if (elementiCarrello.length === 0) return;
             
             if (checkoutModal && modalCorpo) {
                 checkoutModal.classList.remove('opacity-0', 'pointer-events-none');
@@ -437,7 +472,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Funzione per Chiudere il Modal
     function chiudiCheckoutModal() {
         if (checkoutModal && modalCorpo) {
             checkoutModal.classList.add('opacity-0', 'pointer-events-none');
@@ -449,7 +483,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnChiudiModal) btnChiudiModal.addEventListener('click', chiudiCheckoutModal);
     if (checkoutOverlay) checkoutOverlay.addEventListener('click', chiudiCheckoutModal);
 
-    // Gestione dell'invio dei dati tramite il form elegante
     if (formCheckout) {
         formCheckout.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -485,7 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => {
                 chiudiCheckoutModal();
-                // Reindirizza alla schermata di successo in modo nativo e pulito
                 window.location.href = "ordini.html?status=success";
             })
             .catch(error => {
